@@ -8,15 +8,20 @@ Contents: [Install](#install) | [Quick start](#quick-start) | [Examples](#exampl
 
 ## Install
 
-Requires Node 24 or later. The package is not on the npm registry yet (publishing is planned), so install from a release tarball or from source.
+Requires Node 24 or later.
 
-From a tarball (`skill-scale-0.4.0.tgz`). The `yaml` dependency is bundled, so this works with no network:
+From npm:
 
-    npm install -g ./skill-scale-0.4.0.tgz
+    npm install -g skill-scale
     skill-scale --version
 
 or run it without installing:
 
+    npx skill-scale ./path/to/my-skill
+
+From a release tarball (`skill-scale-0.4.0.tgz`, attached to the GitHub release). The `yaml` dependency is bundled, so this works with no network:
+
+    npm install -g ./skill-scale-0.4.0.tgz
     npx ./skill-scale-0.4.0.tgz ./path/to/my-skill
 
 From source:
