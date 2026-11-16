@@ -1,0 +1,358 @@
+# Authored content for the TEST, PROC, MAINT and FIT practices that are not covered by a mechanical check.
+# Anchors and fix hints are OUR inference from each practice's quotes and the contradiction resolutions in research section 3
+# (C-10, C-11 and C-23 decide the eval counts, trigger pass criteria and repetition threshold). They are never Anthropic's words.
+# Design rules used here, so that two reviewers reach the same level:
+#   * Process practices (20) carry a fix hint only. The hints form the authoring checklist and name an action an author can take.
+#   * "Eval record" means the author's eval files under evals/ (or skill-scale.eval.yaml) and any result or trace files beside them.
+#     For `run` practices the same facts are read from the trace of the run. A reviewer cites a file or a trace line for every level.
+#   * Every level is defined by presence, absence or "every / at least one / none" over a set the reviewer can list. No "mostly".
+#   * Where several items are scored, the LOWEST level that applies to any item is the level of the practice.
+#   * A practice with no subject is not_applicable, named in scope_note. It is never 0. When the practice needs a record the folder
+#     does not hold (results, a usage report, other skills, settings), the scope_note says so and the practice is not_applicable or
+#     not_run, never 0. The absence of evals is scored once, by TEST-02.
+#   * No limit is typed into an anchor or hint. TEST-07 and TEST-18 take theirs from params, with the source named beside them.
+# Boundaries so one defect is scored once:
+#   TEST-02 number of eval cases | TEST-06 which prompts the cases hold | TEST-11 which graders each case has | TEST-20 quality of assertions
+#   TEST-04 whether a baseline was run | MAINT-09 what the author did with the baseline result
+#   BODY-05 emphatic wording | BODY-19 rules that must always hold | STRUCT-10 linked files exist | MAINT-04 older-model text and contradictions
+
+TEST-01:
+  fix_hint: Write the evaluation cases first, from tasks where Claude struggled without the skill, and only then write the skill's documentation.
+
+TEST-03:
+  # BP: "all the models you plan to use it with"; ENT names Haiku, Sonnet and Opus as an example list, not as a required list.
+  # Intended models are the ones the skill's files name (compatibility field, body or eval config). The scale does not assume a list.
+  scope_note: Intended models are only those the skill's files name. Not applicable when no result record names a model, or when the folder holds no eval cases (TEST-02 scores that absence). Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": Results cover at most one model, and the skill's files name an intended model that has no result.
+    "1": Results cover two or more models, but at least one intended model named in the skill's files has no result.
+    "2": Every intended model has results, but not on the same eval cases, so the models cannot be compared case by case.
+    "3": Every intended model has results on the same set of eval cases, or the files name only one model and it has results.
+  fix_hint: Run the eval cases on every model the skill's files name and keep each model's results beside the cases, on the same set of cases.
+
+TEST-04:
+  # CC: run each prompt with the skill and again with it off. PE: a case that passes both ways proves nothing about the skill. AGEV allows "a previous version" as the baseline.
+  scope_note: Not applicable when the folder holds no result record. This scores whether a baseline run exists and is compared; what the author does with a passing baseline is MAINT-09. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": Results hold only runs with the skill, and no run without it or with a previous version of it.
+    "1": Some eval cases have a run without the skill or with a previous version, and at least one case has only runs with the skill.
+    "2": Every eval case has a run without the skill or with a previous version, but the results show no comparison between the two.
+    "3": Every eval case has a run without the skill or with a previous version, and the results show the difference between the two per case.
+  fix_hint: Run every eval case once with the skill and once without it, or with the previous version, and record the difference per case.
+
+TEST-05:
+  # CC: "measure separately whether Claude invokes it ... and whether the output matches". PE's tool_used: Skill grader is the trigger measure.
+  # A trace shows the invocation as a Skill tool call; a result file shows it as its own field.
+  scope_note: Not applicable when the folder holds no result record and no run trace. Which prompts are used for triggering is TEST-06; here only the way the two measures are recorded counts. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": Results record only one of the two measures, either whether the skill was invoked or whether the output matched expectations.
+    "1": Both measures are recorded, but as one combined pass or fail per case that cannot tell a missed invocation from a wrong output.
+    "2": Both measures are recorded in separate fields, but at least one eval case has only one of the two fields filled.
+    "3": Every eval case records whether the skill was invoked and whether the output matched expectations, in two separate fields.
+  fix_hint: Record whether the skill was invoked and whether the output matched expectations as two separate fields for every eval case.
+
+TEST-06:
+  # PE: prompts "phrased the way a user would type it rather than naming the skill"; should and should-not cases. AGOD (older): near-misses are the most valuable negatives.
+  # ART1 (older): out-of-scope tasks "that seem related". A near miss is a negative prompt that shares a file type, domain or vocabulary with the description.
+  # The ambiguous edge cases of ENT are not scored: no observable test separates them from the other two kinds.
+  scope_note: Not applicable when the folder holds no eval cases. The number of cases is TEST-02. A prompt names the skill when it contains the skill's name or its slash command. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": No eval case is marked as one where the skill should not trigger.
+    "1": Cases of both kinds exist, but at least one should-trigger prompt names the skill or its slash command.
+    "2": Cases of both kinds exist and no prompt names the skill, but every should-not-trigger prompt is about an unrelated topic.
+    "3": Cases of both kinds exist, no prompt names the skill, and at least one should-not-trigger prompt is a near miss to the skill's domain.
+  fix_hint: Add should-trigger and should-not-trigger prompts phrased as a user would type them, including near misses that share vocabulary with the skill but need another skill.
+
+TEST-07:
+  # PE: "each case runs three times by default" (winner under C-11, Claude Code first). AGOD (older): "3 is a reasonable starting point". PDF (older): 3-5.
+  # PE's 1.0 pass threshold is a case bar and is not scored. The value is the same in both profiles because the only current source is PE.
+  profile_rules:
+    claude-code:
+      params: { repeat_runs: 3 }
+    portable:
+      params: { repeat_runs: 3 }
+  scope_note: Not applicable when the folder holds no result record. Whether the repeated runs start fresh is TEST-09. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": Results hold exactly one run for every eval case.
+    "1": At least one eval case has more than one run in the results and at least one case has only one run.
+    "2": Every eval case has more than one run in the results, but at least one case has fewer than {repeat_runs} runs.
+    "3": Every eval case has at least {repeat_runs} runs in the results.
+  fix_hint: Run each eval case at least {repeat_runs} times and record every run, so that one noisy run does not decide the result.
+
+TEST-08:
+  # AGOD (older, stale-unconfirmed): train and validation sets; use train failures to guide changes. REPO-A: the choice is made by the held-out score.
+  # No split ratio is scored: the ~60/40 split is stated by two older sources only and is not tied to outcome data.
+  scope_note: Applies only when result records show the description changing between result sets, or when the eval files declare a split. Otherwise not applicable. Note that the stock trigger harness has open bug reports (research TEST-08).
+  anchors:
+    "0": The description changed between result sets, and the eval files declare no split into a tuning set and a held-out set.
+    "1": A tuning set and a held-out set are declared, but at least one eval prompt appears in both sets.
+    "2": The two declared sets share no prompt, but results show only the tuning set scored for the description that was kept.
+    "3": The two declared sets share no prompt, and results show the held-out set scored for the description that was kept.
+  fix_hint: Split the eval prompts into a tuning set and a held-out set, change the description using the tuning set, and keep the version that scores best on the held-out set.
+
+TEST-09:
+  # CC: "leftover context from authoring the skill will mask gaps". AGEV (older): "start with a clean context". Read from a run trace or the session identifiers in result files.
+  # If several defects apply, the lowest level applies.
+  scope_note: Not applicable when the folder holds no result record and no run trace.
+  anchors:
+    "0": Several eval cases share one session identifier in the results or trace.
+    "1": Each eval case has its own session, but at least one session opens with turns that are not the case prompt, such as authoring work.
+    "2": Each case has its own session opening with the case prompt, but the workspace holds output files left by earlier runs.
+    "3": Each case has its own session opening with the case prompt, and its workspace holds only the skill and that case's inputs.
+  fix_hint: Run each eval case in a new session that opens with the case prompt, in a workspace holding only the skill and that case's inputs.
+
+TEST-10:
+  fix_hint: Use the skill on real tasks rather than test scenarios, and read the execution trace to see which files Claude opens and which steps it skips.
+
+TEST-11:
+  # PE: "at least one grader" per case; "one grader on the result ... and one on the steps Claude took"; llm rubrics as "concrete PASS and FAIL conditions".
+  # Whether the assertions are objective and discriminating is TEST-20. A grader on the result checks the final message or a produced file.
+  scope_note: Not applicable when the folder holds no eval cases. The lowest level that applies to any case is the level of the practice. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": No eval case has a grader or an expected-output assertion.
+    "1": At least one eval case has a grader and at least one eval case has none.
+    "2": Every eval case has a grader, but at least one case lacks a result grader or a steps grader, or an llm rubric lacks PASS and FAIL conditions.
+    "3": Every eval case has a grader on the result and a grader on the steps taken, and every llm rubric states PASS and FAIL conditions.
+  fix_hint: Give every eval case a grader on the result and a grader on the steps taken, and write llm rubrics as concrete PASS and FAIL conditions.
+
+TEST-12:
+  # CC: /skill-doctor shows "how often it gets used". THQ: a PreToolUse hook that logs skill usage. A skill folder rarely holds either, so this needs project settings or a saved report.
+  scope_note: Needs the project or user settings, or a saved usage report, not only the skill folder. Level 0 only when settings or a report were supplied and show no hook and no report; when none was supplied the practice is not_run, never 0. Claude Code only.
+  anchors:
+    "0": Settings or a report were supplied, and they show neither a hook that logs Skill tool calls nor a saved usage report from /skill-doctor.
+    "1": A hook that logs Skill tool calls is configured, but no log or report with entries is found.
+    "2": A log or report with entries exists, but it gives no invocation count or date range for each skill.
+    "3": A log or report lists an invocation count and date range for this skill.
+  fix_hint: Log skill invocations with a PreToolUse hook or run /skill-doctor, and keep the output with an invocation count and date range for each skill.
+
+TEST-13:
+  fix_hint: Give the skill to teammates and ask whether it activated when expected, whether the instructions were clear and what was missing.
+
+TEST-14:
+  # VER: manual checks "qualify for capture as a loop"; try the built-in /verify first. THQ: verification skills had the most measurable internal impact (an internal claim, no data).
+  # This scores where the check lives. How well a check step is written (named command, rerun until it passes) is BODY-10.
+  scope_note: Claude Code only. Not applicable when the skill's work has no checkable output. A skill whose files describe no check, or leave checking to the user, scores 0. Sibling skills are needed to see a separate verification skill; without them, level 3 is reached only by a reference to /verify. Prose such as 'verify the result' with no command, test or criterion is level 1; naming a command, test, script flag or pass criterion is level 2. Only a check of the result the skill produces counts; a check before the work starts, such as authentication or a cost estimate, does not.
+  anchors:
+    "0": No file of the skill describes a check of the result, or the files leave the checking to the user and no step or skill runs it.
+    "1": A check is stated inside this skill's body as prose that names no command, test or pass criterion.
+    "2": A check with a named command, test or criterion runs inside this skill, and no separate verification skill holds it.
+    "3": The check lives in a separate verification skill that other skills or the user can invoke, or the skill calls the built-in /verify.
+  fix_hint: Move a check you keep doing by hand into its own verification skill, or try the built-in /verify first, and call it from the skills that need it.
+
+TEST-15:
+  # VER: "invoking the skill on a fresh task and confirming the new step runs as part of the output". Read from the trace of one run on a task not used in authoring.
+  scope_note: Not applicable when the skill has no check step to look for, or when no run trace is available.
+  anchors:
+    "0": The trace of a run on a fresh task shows no tool call or output line for the check step.
+    "1": The check step appears in the trace only after the user sends a further message asking for it.
+    "2": The check step runs without being asked, but its result is absent from the final message.
+    "3": The check step runs without being asked, and its result appears in the final message.
+  fix_hint: Invoke the skill on a fresh task and confirm in the trace that the check step runs unprompted and its result appears in the final message.
+
+TEST-16:
+  # VER (suggestion): "test these loops before deploying them broadly" because chains raise token spend. A chain is a skill whose steps invoke another skill.
+  scope_note: Not applicable when the skill does not invoke another skill, or when the folder holds no eval cases or run record at all (TEST-02 scores that absence, so it is not scored again here). "Before deploying" cannot be seen in files; only whether tested runs exist is scored.
+  anchors:
+    "0": Eval cases or run records exist, but none shows the chain of skills executing from start to end.
+    "1": One run record shows the chain executing from start to end, and it records no token or time cost.
+    "2": A run record shows the chain executing from start to end with token or time cost recorded, for a single task only.
+    "3": Run records show the chain executing from start to end on more than one task, each with token or time cost recorded.
+  fix_hint: Run the chain of skills end to end on more than one task and record the token and time cost before rolling it out widely.
+
+TEST-17:
+  fix_hint: Run your test cases after each significant edit instead of waiting until the whole skill is written.
+
+TEST-18:
+  # PDF (stale-unconfirmed): "Skill triggers on 90% of relevant queries" and "Run 10-20 test queries". The sources disagree (C-10, C-11: AGOD about 20, REPO-A 20) and none is tied to outcome data, so the scale reads any stated target as met and takes only the
+  # lower end of the PDF range as the query floor. The target's value is not judged.
+  profile_rules:
+    claude-code:
+      params: { min_trigger_queries: 10 }
+    portable:
+      params: { min_trigger_queries: 10 }
+  scope_note: Not applicable when the folder holds no eval cases. PDF itself calls its 90% target and 10-20 query range "aspirational targets - rough benchmarks". A trigger-rate target of any value counts as stated; only its presence is scored. The mix of positive and negative prompts is TEST-06. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": Fewer than {min_trigger_queries} should-trigger queries exist, and no trigger-rate target is stated in the eval files or notes.
+    "1": Only one of these holds, the count of at least {min_trigger_queries} should-trigger queries or a stated trigger-rate target.
+    "2": At least {min_trigger_queries} should-trigger queries exist and a target is stated, but no result record compares a measured rate with it.
+    "3": At least {min_trigger_queries} should-trigger queries exist, a target is stated, and results show the measured trigger rate beside it.
+  fix_hint: State a trigger-rate target, write about {min_trigger_queries} should-trigger queries, and record the measured rate beside the target.
+
+TEST-19:
+  # PDF: ask "When would you use the [skill name] skill?"; CC: "Verify the skill appears in `What skills are available?`". Scored from the live layer's probe or a saved transcript.
+  # Situations are the distinct occasions for use that the description itself names.
+  scope_note: Not applicable when no probe run or transcript is available. A skill that does not appear in the listing is also a load defect; the file-level causes are scored under META and DESC.
+  anchors:
+    "0": The skill's name does not appear in Claude's answer to which skills are available.
+    "1": The name appears in the listing, but Claude's answer to when it would use the skill names none of the situations the description gives.
+    "2": The name appears, and Claude's answer names some but not all of the situations the description gives.
+    "3": The name appears, and Claude's answer names every situation the description gives.
+  fix_hint: Ask Claude which skills are available and when it would use this skill, and rewrite the description until the answer matches the situations you intend.
+
+TEST-20:
+  # AGEV: assertions only for what "can be checked objectively"; scripts "more reliable than LLM judgment for mechanical checks"; drop assertions that "always pass in both configurations".
+  # Objective = checkable by looking at a produced file, a count, a string, an exit code, or a named fact in the message. Subjective = a judgement of quality with no stated condition.
+  # Where results hold no run without the skill, ignore the clause on assertions that pass in both configurations. The presence of graders is TEST-11.
+  scope_note: Not applicable when the folder holds no eval cases or no assertions. The lowest level that applies to any assertion is the level of the practice. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": Every assertion is subjective, with no stated condition that can be checked, such as the output reads well.
+    "1": At least one assertion states a checkable condition, and at least one subjective assertion remains.
+    "2": Every assertion is checkable, but a string, file or count check is given to an llm grader, or an assertion is recorded passing with and without the skill.
+    "3": Every assertion is checkable, mechanical checks use scripts, and no assertion is recorded as passing both with and without the skill.
+  fix_hint: Rewrite each assertion as a condition a script can check, replace subjective ones, and remove assertions that pass both with and without the skill.
+
+TEST-21:
+  fix_hint: Have a person compare outputs without knowing which came from the skill, and review sample outputs yourself before you revise the skill.
+
+PROC-01:
+  fix_hint: Complete a real task with Claude first, giving context and corrections, then extract the reusable steps into the skill instead of asking for a generic one.
+
+PROC-02:
+  fix_hint: Draft and refine the skill with one Claude session, then test it in a fresh session on real tasks and bring back what you observed.
+
+PROC-03:
+  fix_hint: Begin with a few lines that cover the gaps you saw, pass your evaluations, and add scripts or detail only when a test fails.
+
+PROC-04:
+  fix_hint: Stop iterating on the skill when you are satisfied, when feedback is consistently empty, or when a new round shows no meaningful improvement.
+
+PROC-05:
+  fix_hint: When pass rates stop rising, delete instructions that do not change results instead of adding more rules.
+
+PROC-06:
+  # Cowork in Claude for Mac only (SUP, weak date evidence); the hint is kept in the checklist and does not apply elsewhere.
+  scope_note: Applies to recording a task in Cowork in Claude for Mac only.
+  fix_hint: While recording a task, say aloud why you skip a step or how you choose between options, and keep passwords and private data off the screen.
+
+PROC-07:
+  fix_hint: Before drafting, ask about edge cases, input and output formats, example files, success criteria and dependencies, and write the test prompts after the answers.
+
+PROC-08:
+  # CONTESTED (C-23). Winner CCX: "for the third time" and CC: "keep pasting". Losing quote: ART1 "at least five times". The hint states no count.
+  scope_note: Contested on the repetition threshold. The ART1 count loses to the Claude Code wording, so the hint gives no count.
+  fix_hint: Write down a few concrete use cases, build the skill when you keep pasting the same procedure into chat, and iterate on one hard task first.
+
+PROC-09:
+  fix_hint: Classify the skill as capability uplift (the model cannot do it alone) or encoded preference (it sequences steps your team's way) before you write its evaluations.
+
+MAINT-01:
+  # ENT: "Rerun evaluations periodically ... as workflows and models evolve"; "Require the full evaluation suite to pass before promoting new versions". A run set is the set of result files from one run of all cases.
+  scope_note: Needs result files from more than one date, so it reads history that a single scan may not hold. Not applicable when the folder holds no eval cases or no result record. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": The folder holds one run set and no script or CI job that runs the eval cases.
+    "1": A script or CI job that runs the eval cases exists, but the folder holds only one run set.
+    "2": Two or more run sets exist, but they do not record the model and skill version, or no job fails on an eval failure.
+    "3": Two or more run sets record the model and skill version, and a script or CI job fails when an eval case fails.
+  fix_hint: Add a script or CI job that reruns every eval case when the model or workflow changes, labels results with model and skill version, and fails on any failure.
+
+MAINT-02:
+  # ENT: pin Skills to specific versions; API and organisation scope.
+  scope_note: Portable profile only. The source concerns API requests and organisation workspaces.
+  fix_hint: Pin the skill to a specific version in every request, keep the previous version available for rollback, and promote a new one only after its evaluations pass.
+
+MAINT-03:
+  # CC: /skill-doctor "flags skills in the listing that have never been invoked and says where to turn them off". No cost threshold is documented, so cost is not scored.
+  scope_note: Claude Code only. Needs a saved /skill-doctor report or a live /skill-doctor run; without one the practice is not_run, never 0. A report that does not list this skill covers nothing about it, so the practice is not_run too (our inference). Cost figures are not scored because the source gives no threshold.
+  anchors:
+    "0": A supplied report flags the skill as never invoked, the skill stays enabled, and no note says why.
+    "1": The report flags the skill as never invoked, the skill stays enabled, and a note gives a reason to keep it.
+    "2": The report flags the skill as never invoked, and the files or settings show the skill turned off or removed.
+    "3": The report lists the skill as invoked at least once and does not flag it.
+  fix_hint: Review the /skill-doctor listing, then turn off or delete skills flagged as never invoked, or note why you keep each one.
+
+MAINT-04:
+  # CCX: /doctor looks for "instructions written for older models, references to files or commands that don't exist, and files that contradict each other". CPBP: "Remove over-prompting".
+  # Missing files are STRUCT-10 and emphasis is BODY-05, so they are not counted here. Workaround text = an instruction whose stated reason is a weakness of the model (for example "Claude tends to forget ..."),
+  # or one that names a model version as the one it is written for; a version named in the compatibility field or in eval config does not count. Reasons about people, process or tools are not model weaknesses.
+  # Contradiction = two instructions that give opposite directions for the same situation. A rule followed by its stated exception, or two steps for different situations, is not a contradiction.
+  # List every workaround instruction and every contradicting pair first, then take the first anchor that fits. Our reading: "older" is not decidable from the file.
+  scope_note: Claude Code only. Missing files are STRUCT-10 and emphatic wording is BODY-05; only workaround text and contradictions are scored here. A rule with a stated exception is not a contradiction, and a reason that is about people or process is not workaround text. A guardrail addressed to the agent, such as a list of excuses or red flags, is not workaround text unless it states a weakness or version of the model as its reason (our inference). A branch on a capability, such as 'if your model cannot process images', is not workaround text. Two instructions for which a file states which one wins are not a contradiction. A pair is a contradiction only when both instructions can be quoted and no file says which one wins. A stated tendency of the agent or model as the reason for an instruction, such as 'agents skip the body', is a model weakness.
+  anchors:
+    "0": The files hold at least one workaround instruction and at least one pair of instructions that contradict each other.
+    "1": The files hold at least one pair of instructions that contradict each other, such as always doing a step and never doing it, and no workaround instruction.
+    "2": The files hold at least one workaround instruction that gives a model weakness as its reason, and no contradicting pair.
+    "3": The files hold no workaround instruction and no pair of instructions that contradict each other.
+  fix_hint: Delete instructions that work around a model weakness, resolve instructions that contradict each other, and keep only what current models need.
+
+MAINT-05:
+  fix_hint: Revise the skill's description or instructions when its trigger accuracy falls or when you keep tweaking its workflow by hand.
+
+MAINT-06:
+  # ENT: store Skill directories in Git. Assessed as mechanical in the research file, but whether a repository tracks and reviews the folder is not a property of its files.
+  scope_note: A .git directory above the skill does not show the skill is committed or reviewed, so the scale has no check and the practice stays on the checklist.
+  fix_hint: Keep the skill folder in Git so that changes get history, pull-request review and rollback.
+
+MAINT-07:
+  # REPO-A package_skill.py: ROOT_EXCLUDE_DIRS = {"evals"}. Mechanical in nature, but it concerns the packaged skill. A folder scan cannot tell packaged files
+  # from source files, and a check that flagged evals/ would contradict TEST-02, which wants evals/ in the source folder. This is why it has no check.
+  scope_note: A folder scan cannot tell packaged files from source files, and TEST-02 wants evals/ present in the source, so there is no check. Not applicable when no archive or packaging script is present.
+  anchors:
+    "0": A packaged archive or package manifest of the skill lists files under an evals directory.
+    "3": A packaged archive, manifest or packaging script is present, and no packaged file lies under an evals directory.
+  fix_hint: Exclude the evals directory from the packaged skill archive, for example with an exclude list in the packaging script.
+
+MAINT-08:
+  fix_hint: Hold off on making the verification chain a pull-request-wide gate until the chain stops changing.
+
+MAINT-09:
+  # ISC: when the base model passes the evals without the skill, the skill's techniques "may have been incorporated" into the model. A case passes when every assertion in it passes.
+  # Whether a baseline was run is TEST-04; this scores what the baseline shows and what the author recorded.
+  scope_note: Needs results of runs without the skill. Not applicable when the folder holds no such results. A note that keeps the skill because it encodes a team process (an encoded-preference skill, ISC) counts as a reason. Eval cases and result records are only files under evals/ or skill-scale.eval.yaml and the results beside them; other test or scenario documents do not count.
+  anchors:
+    "0": The run without the skill passes every eval case, and no note gives a reason to keep the skill.
+    "1": The run without the skill passes every eval case, and a note gives a reason to keep the skill.
+    "2": The run without the skill passes at least one eval case but fails at least one.
+    "3": The run without the skill fails every eval case.
+  fix_hint: Rerun the eval cases without the skill after each model change, and retire or slim the skill when the baseline passes every case.
+
+FIT-01:
+  # CC: create a skill when a section of CLAUDE.md "has grown into a procedure rather than a fact". CCX (third time) and ART1 (five times) disagree on the threshold (C-23); the scale scores no count.
+  # A standing fact is true for all work in the project whatever the task (build commands, style rules, stack summary). Reference text that matters only for this skill's task, such as a schema, is not a standing fact.
+  scope_note: Claude Code only. Level 2 needs the project's CLAUDE.md; when it is not shown, level 2 is skipped and the skill scores 3 if it meets the other tests. Task-specific reference text is permitted in a skill.
+  anchors:
+    "0": The body holds only standing facts and no ordered steps or task-specific procedure.
+    "1": The body holds a procedure and also a section of standing facts that apply to all work in the project.
+    "2": The body holds a procedure with no standing facts, but the CLAUDE.md shown holds a copy or part of the same procedure.
+    "3": The body holds a procedure with no standing facts, and the CLAUDE.md shown holds no copy of it.
+  fix_hint: Keep the multi-step procedure in the skill, move standing facts that apply to all work into CLAUDE.md, and remove any copy of the procedure from CLAUDE.md.
+
+FIT-02:
+  # STEER: "Use a subagent when a side task like deep search, a log analysis pass, or a dependency audit would clutter your main conversation ... Use a skill when you want the procedure to play out inside the main thread so you can see and steer each step."
+  # Single-source contrast; CC documents `context: fork` separately (BODY-17). A side task is a step whose intermediate results the user will not reference again.
+  scope_note: Claude Code only. Not applicable when the body has no side task, or when its steps tell Claude to show or confirm each step with the user, since the source permits those in the main thread. The skill's main deliverable is never a side task; only a step ancillary to it, such as a search or analysis whose raw output is summarised afterwards, is one.
+  anchors:
+    "0": The body has Claude run a side task with bulky intermediate output in the main thread, with no fork and no subagent instruction.
+    "1": The body tells Claude to keep the side task's output short or summarise it, but the side task still runs in the main thread.
+    "2": The body tells Claude in prose to hand the side task to a subagent, but the frontmatter sets no fork and no agent.
+    "3": The frontmatter sets context fork or names an agent for the skill, so the side task runs apart from the main thread.
+  fix_hint: Run a side task with bulky intermediate output in a subagent, through context fork or a named agent, and return only a summary to the main thread.
+
+FIT-03:
+  # STEER: a file-specific constraint "fits best as a rule placed in your paths: frontmatter". Single-source. TRIG-06 notes that skills can use paths too, so the paths field on a skill is scored above no scoping.
+  # A file-pattern constraint is an instruction that applies whenever files matching a path or extension pattern are touched, whatever the task.
+  # Test the rule file first: if a shown rule file with a paths field holds the constraint, the level is 2 or 3. Otherwise the level is 1 when the skill's own paths field matches the constrained files, else 0 (a paths field that does not match them is 0).
+  # Level 1 is our inference: TRIG-06 says skills can use paths, but STEER does not say a skill paths field equals a rule.
+  scope_note: Claude Code only. Not applicable when the body states no file-pattern constraint and does not point to a rule. Levels 2 and 3 need the project's rule files; when none is shown, only levels 0 and 1 are reachable. Level 1 is our inference.
+  anchors:
+    "0": The body states a file-pattern constraint, no shown rule file holds it, and the skill's frontmatter has no paths field or one that does not match the constrained files.
+    "1": The body states a file-pattern constraint, no shown rule file holds it, and the skill's frontmatter has a paths field that matches the constrained files.
+    "2": The body states a file-pattern constraint that a rule file with a paths field already holds, so the text appears twice.
+    "3": A rule file with a paths field holds the constraint, and the skill body points to that rule instead of restating it.
+  fix_hint: Move constraints that apply only to certain files into a rule with paths frontmatter, and point to that rule from the skill instead of restating it.
+
+FIT-04:
+  fix_hint: When many skills are checked in, bundle them with subagents and hooks as a plugin and share it through an internal marketplace.
+
+FIT-05:
+  # THQ: skill hooks "are only activated when the skill is called ... for more opinionated hooks that you don't want to run all the time". BODY-19 scores whether rules that must always hold are hooks at all.
+  # A guardrail is a restriction on tools, commands or files that the body says Claude must obey while the skill runs.
+  scope_note: Claude Code only. Not applicable when the body states no guardrail. Settings hooks are visible only when the project or user settings are shown; without them, a guardrail with no skill hook scores 0. A guardrail restricts which tools, commands or files Claude may use while the skill runs; a workflow gate such as waiting for user approval is not one.
+  anchors:
+    "0": No guardrail in the body is enforced by any hook.
+    "1": Some guardrails are enforced by hooks in project or user settings, and none by hooks in the skill's frontmatter.
+    "2": At least one guardrail is enforced by a hook in the skill's frontmatter, and at least one is not covered by a skill hook.
+    "3": Every guardrail in the body is covered by a hook in the skill's frontmatter.
+  fix_hint: Enforce guardrails that matter only while this skill runs with hooks in the skill's frontmatter, not with always-on hooks in settings.
+
+FIT-06:
+  fix_hint: Write the skill as the instructions for what to do with the data an MCP server provides, and not as another way of reaching that data.

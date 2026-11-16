@@ -1,0 +1,22 @@
+# Quotes the parser cannot extract (nested quotation marks, or code). Copied verbatim from research revision 5.
+SCRIPT-08:
+  - text: 'always use fully qualified tool names to avoid "tool not found" errors.'
+    source: BP
+    section: MCP tool references
+MAINT-07:
+  - text: 'ROOT_EXCLUDE_DIRS = {"evals"}'
+    source: REPO-A
+    section: package_skill.py
+PROC-02:
+  - text: 'Work with one instance of Claude ("Claude A") to create a Skill that is used by other instances ("Claude B").'
+    source: BP
+    section: ""
+PROC-08:
+  - text: Before writing any code, identify 2-3 concrete use cases your skill should enable.
+    source: PDF
+    section: p.8
+    older: true
+  - text: "Before creating a skill, ask: Have I done this task at least five times? Will I do it at least ten more times? If yes, a skill makes sense."
+    source: ART1
+    section: ""
+    older: true

@@ -1,0 +1,7 @@
+# Corrections where the Scope line or the Assess line of the research entry does not give the right value.
+DESC-02: { profiles: [claude-code, portable], reason: "The Scope line names only CC, but the entry gives a limit for both surfaces (1,536 listing characters; 1,024 upload)." }
+DESC-05: { profiles: [claude-code, portable], reason: "The Scope line names API and claude.ai, but C-05 resolves the rule for the Claude Code profile too (BP wins; Claude Code docs are silent)." }
+DESC-10: { profiles: [portable], reason: "C-15: Claude Code tolerates and escapes angle brackets in a description, so the rule applies to the portable profile only." }
+META-02: { profiles: [portable], reason: "The title says portable only; C-03: Claude Code does not require the name to match the folder." }
+META-08: { profiles: [portable], reason: "Concerns packaging an upload ZIP, which only the upload surfaces enforce." }
+STRUCT-07: { assess: [mechanical], reason: "The entry has no Assess line; the rule is a file-name test." }

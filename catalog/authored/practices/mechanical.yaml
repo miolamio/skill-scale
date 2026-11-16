@@ -1,0 +1,170 @@
+# Authored content for the 17 practices that have a mechanical check in this version.
+# Anchors, fix hints and profile rules are OUR inference from the practice's quotes and the contradiction
+# resolutions in research section 3 (C-01 to C-04, C-15). They are never Anthropic's words.
+# Every number below is taken from a quoted source; the comment names the quote or the resolution.
+# {name} placeholders are replaced by the active profile's params when a record is built.
+
+META-01:
+  # CC: "a skill's or a plugin file's `name` longer than that is ignored" (CL 2.1.292, 256). No charset rule in Claude Code (C-04).
+  # Portable: "Must be 1-64 characters" and "May only contain ... lowercase alphanumeric characters (a-z, 0-9) and hyphens" (SPEC).
+  profile_rules:
+    claude-code:
+      params: { name_max_chars: 256, name_charset: any, name_required: false }
+    portable:
+      params: { name_max_chars: 64, name_charset: lowercase-alnum-hyphen, name_required: true }
+  anchors:
+    "0": The name is longer than {name_max_chars} characters, breaks the profile's character rules, or is missing where the profile requires one.
+    "3": The name is present where required, at most {name_max_chars} characters long, and uses only the characters the profile allows.
+  fix_hint: Shorten the name to at most {name_max_chars} characters; for the portable profile use only lowercase letters, digits and single hyphens.
+
+META-02:
+  scope_note: Claude Code does not require the name to match the folder (C-03).
+  anchors:
+    "0": The name field differs from the name of the folder that contains the skill.
+    "3": The name field is identical to the name of the folder that contains the skill.
+  fix_hint: Rename the folder or change the name field so that both are exactly the same.
+
+META-03:
+  # Folder-name and name rules are facts about what Claude Code does (research section 2.12: LB-01, LB-02, LB-03, LB-05, LB-06),
+  # so they are constants in src/checks/effects.ts and meta.ts, not params. Plugin exception: LB-02 and LB-05.
+  # Portable only: "Cannot contain reserved words: `anthropic`, `claude`" (BP). Angle brackets are covered by LB-03.
+  profile_rules:
+    portable:
+      params:
+        reserved_words: [anthropic, claude]
+  anchors:
+    "0": The name or folder name holds a character or word that Claude Code or the portable profile refuses or reserves.
+    "3": Neither the name nor the folder name holds a character or word that Claude Code or the portable profile refuses or reserves.
+  fix_hint: Rename the folder and the name field to remove reserved names, reserved words, angle brackets and hidden characters.
+
+META-05:
+  # Portable: "If you include any field the spec doesn't allow, packaging or upload fails with a hard error" (CC page).
+  # The six fields are the spec's: name, description, license, compatibility, metadata, allowed-tools.
+  profile_rules:
+    portable:
+      params: { allowed_fields: [name, description, license, compatibility, metadata, allowed-tools] }
+  anchors:
+    "0": The frontmatter fails to parse, does not start on line 1, or under the portable profile holds a field outside the allowed list.
+    "3": The frontmatter is absent, or it starts on line 1, parses, and under the portable profile holds only allowed fields.
+  fix_hint: Make the opening --- the first line of SKILL.md and fix the YAML; for the portable profile keep only the six fields the spec allows.
+
+META-06:
+  # Rule: "Don't reuse frontmatter field names such as `paths` as keys." (CC, metadata row of the frontmatter table).
+  # Source: https://code.claude.com/docs/en/skills.md, "Frontmatter reference" table, which has exactly these 20 rows
+  # (name ... compatibility). The page names only `paths` as an example; reading "frontmatter field names" as all 20 table
+  # rows is our reading of that sentence, not a list Anthropic states. The table is not in research revision 5.
+  profile_rules:
+    claude-code:
+      params: &reserved
+        reserved_metadata_keys: [name, description, when_to_use, argument-hint, arguments, disable-model-invocation, user-invocable, allowed-tools, disallowed-tools, model, effort, context, agent, background, hooks, paths, shell, metadata, license, compatibility]
+    portable:
+      params: *reserved
+  anchors:
+    "0": A key under metadata reuses the name of a frontmatter field.
+    "3": No key under metadata reuses the name of a frontmatter field.
+  fix_hint: Rename the metadata key so that it does not match a frontmatter field, for example by adding a prefix that is unique to your project.
+
+META-07:
+  anchors:
+    "0": The skill file is not named exactly SKILL.md in capital letters.
+    "3": The skill file is named exactly SKILL.md in capital letters.
+  fix_hint: Rename the file to SKILL.md, in capital letters, and keep it directly inside the skill folder.
+
+DESC-01:
+  # Portable: "Must be non-empty" (BP). Claude Code: "Only `description` is recommended" (CC), so a directive there (C-02).
+  anchors:
+    "0": The description is missing, or it contains only whitespace.
+    "3": The description is present and contains text.
+  fix_hint: Add a description that says what the skill does and when to use it.
+
+DESC-02:
+  # CC: "truncated at 1,536 characters in the skill listing" (CC). Portable: "Maximum 1,024 characters" (BP), "Must be 1-1024 characters" (SPEC). C-01.
+  profile_rules:
+    claude-code:
+      params: { description_max_chars: 1536, count_when_to_use: true }
+    portable:
+      params: { description_max_chars: 1024 }
+  anchors:
+    "0": The description, together with when_to_use where the profile counts it, is longer than {description_max_chars} characters.
+    "3": The description, together with when_to_use where the profile counts it, is at most {description_max_chars} characters long.
+  fix_hint: Shorten the description to at most {description_max_chars} characters and put the main use case first.
+
+DESC-10:
+  scope_note: Claude Code tolerates angle brackets in a description and shows them escaped (C-15).
+  anchors:
+    "0": The description contains an XML or HTML style tag, that is a bracketed element name.
+    "3": The description contains no XML or HTML style tag.
+  fix_hint: Remove the tags from the description and write the text as plain words.
+
+BODY-02:
+  # "Keep `SKILL.md` under 500 lines." (CC, BP, SPEC). "Under" is read literally: 500 lines already fails. The 5,000-token advice (SPEC) is not checked: no tokenizer.
+  profile_rules:
+    claude-code:
+      params: &body_limit
+        lines_must_be_under: 500
+    portable:
+      params: *body_limit
+  anchors:
+    "0": SKILL.md has {lines_must_be_under} lines or more.
+    "3": SKILL.md has fewer than {lines_must_be_under} lines.
+  fix_hint: Move detail into separate files inside the skill folder and link them from SKILL.md until it has fewer than {lines_must_be_under} lines.
+
+STRUCT-02:
+  anchors:
+    "0": A file that SKILL.md links to links on to a further file that SKILL.md does not link to directly.
+    "3": No file that SKILL.md links to links on to a further file that SKILL.md does not link to directly.
+  fix_hint: Link every reference file directly from SKILL.md instead of from another reference file.
+
+STRUCT-03:
+  # "For reference files longer than 100 lines, include a table of contents at the top." (BP). 100 wins over 300 (C-08).
+  profile_rules:
+    claude-code:
+      params: &toc_limit
+        toc_required_when_lines_exceed: 100
+    portable:
+      params: *toc_limit
+  scope_note: Only reference files longer than the limit have a subject.
+  anchors:
+    "0": A reference file longer than {toc_required_when_lines_exceed} lines does not open with a table of contents.
+    "3": Every reference file longer than {toc_required_when_lines_exceed} lines opens with a table of contents.
+  fix_hint: Add a Contents section as the first section of each reference file longer than {toc_required_when_lines_exceed} lines.
+
+STRUCT-06:
+  anchors:
+    "0": A link or an inline file path in a Markdown file uses backslashes between folder names.
+    "3": Every link and inline file path in the Markdown files uses forward slashes.
+  fix_hint: Write file paths with forward slashes, for example reference/guide.md.
+
+STRUCT-07:
+  anchors:
+    "0": The top level of the skill folder contains a file named README.md.
+    "3": The top level of the skill folder contains no file named README.md.
+  fix_hint: Delete README.md from the skill folder and move any text that is needed into SKILL.md or a reference file.
+
+STRUCT-10:
+  scope_note: Only links and skill-folder paths in Markdown files are tested; a path in running text or in code is not.
+  anchors:
+    "0": A relative link or a skill-folder path in the Markdown files points to a file that does not exist.
+    "3": Every relative link and skill-folder path in the Markdown files points to a file that exists.
+  fix_hint: Create the missing file or correct the path so that it points to an existing file inside the skill folder.
+
+SAFE-02:
+  # The source says "Check for API keys, tokens, or passwords in Skill files." and names no patterns; the pattern list is ours (src/checks/safe.ts).
+  anchors:
+    "0": A file in the skill holds text shaped like a known API key, access token or private key.
+    "3": No file in the skill holds text shaped like a known API key, access token or private key.
+  fix_hint: Remove the secret from the skill, revoke it, and have the skill read it from an environment variable instead.
+
+TEST-02:
+  # "At least three evaluations created" (BP); "3-5 representative queries" (ENT). The floor is 3 (C-10).
+  profile_rules:
+    claude-code:
+      params: &eval_floor
+        min_eval_cases: 3
+    portable:
+      params: *eval_floor
+  scope_note: Looks only inside the skill folder, so evals kept elsewhere in the repository are not seen.
+  anchors:
+    "0": The evals folder of the skill holds fewer than {min_eval_cases} eval cases, or does not exist.
+    "3": The evals folder of the skill holds at least {min_eval_cases} eval cases.
+  fix_hint: Add eval cases under evals/ until there are at least {min_eval_cases}, with prompts that should and should not trigger the skill.

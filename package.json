@@ -1,0 +1,53 @@
+{
+  "name": "skill-scale",
+  "version": "0.4.0",
+  "description": "Scores a Claude Code skill against Anthropic's best practices, one criterion at a time, with evidence and a fix hint.",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "skills",
+    "agent-skills",
+    "lint",
+    "best-practices"
+  ],
+  "license": "MIT",
+  "author": "Anton Vdovichenko",
+  "homepage": "https://github.com/miolamio/skill-scale#readme",
+  "bugs": {
+    "url": "https://github.com/miolamio/skill-scale/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miolamio/skill-scale.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "skill-scale": "dist/bin.js"
+  },
+  "files": [
+    "dist",
+    "catalog"
+  ],
+  "scripts": {
+    "prepack": "npm run build",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "catalog:build": "node tools/build-catalogue.ts",
+    "catalog:check": "node tools/build-catalogue.ts --check --strict",
+    "judge:smoke": "node tools/judge-smoke.ts"
+  },
+  "dependencies": {
+    "yaml": "2.9.1"
+  },
+  "bundleDependencies": [
+    "yaml"
+  ],
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "6.0.3"
+  }
+}

@@ -1,0 +1,187 @@
+# Authored content for the META, DESC and TRIG practices that are not covered by a mechanical check.
+# Anchors and fix hints are OUR inference from each practice's quotes and the contradiction resolutions in
+# research section 3 (C-05 and C-07 decide DESC-06 and DESC-08). They are never Anthropic's words.
+# Where a source gives its own strong or weak example, the anchor uses it; the comment names the source.
+# Process practices (TRIG-02, TRIG-07) carry a fix hint only.
+
+META-04:
+  # BP: "Consider using gerund form"; avoid vague names (helper, utils, tools), generic names (documents, data, files)
+  # and inconsistent patterns within a collection. Anthropic's own example skills use noun phrases, so gerunds are not required.
+  # Level 1 is the name's content (domain, not task); level 2 is its pattern against siblings. They never penalise the same thing.
+  scope_note: Level 2 and the pattern part of level 3 need the names of sibling skills in the same collection. When only one skill is scanned, score the name alone, giving 3 to a name that states the task. A brand plus a task word, as in perplexity-search, states the task.
+  anchors:
+    "0": The name is a vague or generic single word such as helper, utils, tools, documents, data or files.
+    "1": The name is a brand name, domain name or bare noun that states no task the skill performs, as in pdf, finance or acme.
+    "2": The name states the task and is not generic, but its pattern differs from the dominant pattern among its sibling skills.
+    "3": The name states the task, is not generic, and matches the dominant pattern (gerund or noun phrase) among its siblings, or none are shown.
+  fix_hint: Rename the skill to say the task it performs, avoid generic words, and match the naming pattern of your other skills.
+
+META-08:
+  scope_note: Applies to claude.ai and Cowork uploads only (SUP, weak date evidence).
+  anchors:
+    "0": SKILL.md sits loose at the top of the archive, or the skill folder is nested inside another directory in it.
+    "3": The archive's single top-level entry is the skill folder, and SKILL.md is directly inside that folder.
+  fix_hint: Re-zip from the folder's parent so the skill folder itself is the archive root, with SKILL.md directly inside it.
+
+DESC-03:
+  # This practice owns the missing trigger clause. DESC-06 and DESC-12 are not applicable when there is none, so the defect is scored once.
+  scope_note: A trigger clause is a sentence or clause saying in which requests or situations to use the skill; a keyword list alone is not one. A description with no trigger clause is penalised here only; DESC-06 and DESC-12 record not_applicable for it.
+  anchors:
+    "0": The description says nothing about what the skill does or when to use it, or it is a bare label.
+    "1": The description says what the skill does but has no trigger clause naming a request or situation in which to use it.
+    "2": The description names a situation for use that is generic enough to fit many unrelated skills, or names situations without saying what the skill does.
+    "3": The description says what the skill does and names concrete requests or situations that should trigger it.
+  fix_hint: Add a sentence beginning Use when that names the requests or situations in which a user would want this skill.
+
+DESC-04:
+  # Poor examples in BP: "Helps with documents", "Processes data", "Does stuff with files"; SPEC: "Helps with PDFs."
+  anchors:
+    "0": The description is a vague phrase of the kind BP lists as weak, such as Helps with documents or Processes data.
+    "1": The description names a file type or domain but no specific operation, and contains no words a user would type.
+    "2": The description names specific operations, but uses internal or technical terms where users would say something else.
+    "3": The description names specific operations and file types, using words a user would naturally type in a request.
+  fix_hint: Replace vague verbs with the specific operations and file types, using the words a user would type in a request.
+
+DESC-05:
+  # Winner BP (C-05): "Always write in third person"; BP's weak examples are "I can help you process Excel files" and "You can use this to process Excel files".
+  # The pronoun list (I, we, my, you, your) is our inference; no source gives one. Count sentences or clauses that use one about the skill or the reader.
+  anchors:
+    "0": Most sentences or clauses in the description address the reader or speak for the skill, as in I can help you or You can use this.
+    "1": Two or more sentences or clauses, but not most, use I, we, you or your, while the rest describe the skill in third person.
+    "2": Exactly one sentence or clause uses I, we, my, you or your, such as a single when you need, and all the rest are third person.
+    "3": No sentence in the description uses I, we, you or your; every sentence describes the skill or names the user's request.
+  fix_hint: Rewrite every sentence of the description in third person, replacing I and you with the skill or the user.
+
+DESC-06:
+  # CONTESTED (C-05). Winner BP: "Always write in third person". Losing quotes: AGOD "Use imperative phrasing." and REPO-A "Use this skill for".
+  # Person is scored by DESC-05, so these anchors score only the form of the trigger statement (the Use when delta). The BP source does not
+  # forbid an imperative Use when sentence, which has no pronoun. That I and you are ruled out here is inference, not a source rule.
+  scope_note: Scores the trigger clause only. A description with no trigger clause is penalised in DESC-03 and is not applicable here.
+  anchors:
+    "0": The trigger clause names no situation and is not an instruction, as in Handy for many jobs.
+    "1": The trigger clause is an instruction but names no situation, as in Use when needed.
+    "2": The trigger clause names situations but is a statement about the skill, not an instruction, as in This skill is used for X.
+    "3": The trigger clause is an instruction such as Use when or Use this skill for, and it names concrete situations.
+  fix_hint: Add a sentence in the instruction form Use when followed by the situations, after a sentence stating what the skill does.
+
+DESC-07:
+  anchors:
+    "0": The description lists internal mechanics, such as libraries, script names or processing steps, and names no user goal.
+    "1": The description names a user goal in one phrase but spends most of its length on how the skill works internally.
+    "2": The description centres on the user's goal, but also names implementation details that no user request would mention.
+    "3": The description names what the user is trying to achieve and contains no library, script or step-by-step mechanics.
+  fix_hint: Rewrite the description around what the user wants to achieve and remove libraries, scripts and processing steps.
+
+DESC-08:
+  # CONTESTED (C-07). Winner CPBP: soften aggressive language that was written to reduce undertriggering; CPBP is scoped to Opus 4.5 and 4.6.
+  # Losing quotes: AGOD "Err on the side of being pushy." and REPO-A "a little bit pushy". Suggestion strength; treat as optional.
+  # Scores emphasis on invocation only. A boundary such as NEVER use for X is DESC-09 and is not forceful wording here.
+  scope_note: A capitalised boundary such as NEVER use for X is an exclusion and scores under DESC-09, not as forceful wording here.
+  anchors:
+    "0": The description uses capitals or forceful words such as ALWAYS use or MUST invoke to push Claude into invoking the skill.
+    "1": The description presses Claude to invoke the skill beyond a stated situation, as in use proactively or even if not asked.
+    "2": The description uses plain wording, but one emphatic invocation word remains, such as always or definitely, in normal case.
+    "3": The description uses plain wording only, and its triggers rest on named situations rather than on emphasis.
+  fix_hint: Remove capitalised or forceful invocation wording from the description and rely on plain statements of the situations it covers.
+
+DESC-09:
+  # ART1 strong example ends "Not for simple PDF viewing or basic conversions."; PDF: "Add negative triggers".
+  scope_note: A before or unless clause states a precondition for use, not an excluded task, and is not an exclusion here.
+  anchors:
+    "0": The description names what the skill covers and says nothing about neighbouring tasks it does not cover.
+    "1": The description narrows its scope with qualifiers, such as only for or specifically, but names no excluded task.
+    "2": The description implies an excluded task only by contrast, such as for X rather than Y, with no explicit exclusion clause.
+    "3": The description has an explicit Not for or Do not use for clause that names an excluded task or neighbouring skill.
+  fix_hint: Add a clause such as Not for followed by the nearest tasks or skills this one should leave alone.
+
+DESC-11:
+  # REPO-A: "an ever-expanding list of specific queries". AGOD's "keywords from failed queries" cannot be observed in a folder, so it is not scored.
+  # Short keywords are allowed at level 3 because DESC-04 level 3 asks for words a user would type. Lengths are relative, with no fixed count.
+  anchors:
+    "0": The description is mainly a list of quoted example queries or keywords, with little or no statement of the user's intent.
+    "1": The description states a category of intent, then adds a list of queries or keywords longer than that statement.
+    "2": The description states categories of intent and adds some quoted example queries that are shorter than the statement.
+    "3": The description states categories of intent, and holds at most a few short keywords inside them, with no quoted example queries.
+  fix_hint: Replace lists of example queries with one phrase per category of user intent that the skill should handle.
+
+DESC-12:
+  # Rationale, not an action: observable only as whether the description is written as a trigger statement rather than a summary.
+  # THQ: "not a summary, it's a description of when to trigger this skill". Where the trigger sits is not in any source, so it is not scored.
+  scope_note: Compares the length of the trigger clause with the summary of contents. A description with no trigger clause is penalised in DESC-03 and is not applicable here.
+  anchors:
+    "0": Most of the description summarises the skill's contents or history, and the trigger clause is a phrase inside another sentence.
+    "1": Most of the description summarises the skill's contents or history, and the trigger clause is a single sentence.
+    "2": The trigger clause runs to more than one sentence, but most of the description still summarises the skill's contents.
+    "3": Most of the description states when Claude should pick the skill, and any summary of contents is short and secondary.
+  fix_hint: Rewrite the description as a statement of when to trigger the skill rather than a summary of what the skill contains.
+
+TRIG-01:
+  scope_note: Needs the descriptions of the other installed skills. Without them, score only whether the description claims a broad area (level 0 against the rest) and mark overlap as unknown.
+  anchors:
+    "0": The description claims a broad area, such as all documents or any data task, that overlaps several other installed skills.
+    "1": The description names only a domain, and a sibling skill's description names the same domain with nothing to separate them.
+    "2": The description names a specific task, but a sibling skill's description uses wording that would match the same user request.
+    "3": The description names tasks no sibling skill's description matches, or states the boundary against each overlapping sibling.
+  fix_hint: Compare this description with your other skills and rewrite the overlapping phrases so each request fits only one skill.
+
+TRIG-02:
+  fix_hint: Count the skills enabled together, then merge, remove or disable those you rarely use so the active set stays small.
+
+TRIG-03:
+  anchors:
+    "0": The skill covers several unrelated workflows, and its description lists many unrelated jobs joined by and or or.
+    "1": The skill covers one domain but several separate workflows that a user would start with different requests.
+    "2": The skill covers one workflow but also holds steps that belong to a neighbouring workflow with its own trigger.
+    "3": The skill covers one workflow with a single start condition, and every section of the body serves that workflow.
+  fix_hint: Split the skill so each one covers a single workflow with its own trigger, or cut the sections for other workflows.
+
+TRIG-04:
+  # CCBP: "add disable-model-invocation: true" for a workflow with side effects. Read-only steps in the same skill do not lower the score.
+  # Levels 1 and 2 are our inference: what the body does when the frontmatter does not gate.
+  scope_note: Claude Code only; the invocation-control field is a Claude Code feature (CCBP, CCX). A side effect is outward-facing or irreversible, such as push, publish, send, delete, deploy or install (inference); local commits do not count.
+  anchors:
+    "0": The body runs commands with side effects, such as push, publish, send, delete, deploy or install, with no frontmatter gate and no confirmation step.
+    "1": The side-effect steps ask the user to confirm in the body, but the frontmatter does not stop Claude from invoking the skill itself.
+    "2": The body says the skill runs only when the user names it, but the frontmatter does not enforce that with a gate.
+    "3": The frontmatter sets disable-model-invocation on the skill, whatever else it holds, or the skill has no side-effect steps.
+  fix_hint: Add disable-model-invocation true to the frontmatter of any skill whose steps deploy, delete, send or publish.
+
+TRIG-05:
+  # Observable from the skill's files only: the frontmatter and what the body or description claims.
+  scope_note: Not applicable unless the frontmatter sets user-invocable to false; an unset field or the value true is not applicable.
+  anchors:
+    "0": The frontmatter sets user-invocable false, and the body is a command-like procedure or says Claude must not run the skill.
+    "3": The frontmatter sets user-invocable false on a skill whose body is reference knowledge, and makes no claim that this stops Claude.
+  fix_hint: Use user-invocable false only for background knowledge, and set disable-model-invocation to stop Claude from running it.
+
+TRIG-06:
+  # Observable from the skill's files only: the patterns against the file types the body and description discuss.
+  # Mechanical-only practices take levels 0 and 3 (plan authoring rule 1), so unset paths on a file-type skill is folded into level 0.
+  anchors:
+    "0": The frontmatter sets paths with patterns for file types the skill never discusses, or leaves paths unset on a skill about particular file types.
+    "3": The frontmatter sets paths with patterns for the file types the skill discusses, or leaves paths unset because it is not file-specific.
+  scope_note: Known issue, experimental (failed the agreement test). Level 0 for no paths on a skill about particular file types is too harsh, because the source only recommends paths. Until re-qualified this practice is never a blocker.
+  fix_hint: Set paths to glob patterns that match the files this skill concerns, or remove the field if it applies everywhere.
+
+TRIG-07:
+  fix_hint: Test trigger wording on realistic multi-step requests, not one-step tasks, before concluding that a description is at fault.
+
+TRIG-08:
+  # VER is written about verification skills; extension to other skills is our inference and is not scored here.
+  scope_note: Claude Code only. Applies to verification skills, meaning skills whose purpose is to check work. For any other skill, record not_applicable.
+  anchors:
+    "0": The skill gives no hint of how it starts, and no README, body line or description says whether it runs alone or inside another.
+    "1": The body assumes one start mode, such as run after every change, without naming it as standalone, embedded, chained or per pull request.
+    "2": The body names a start mode but omits what it needs, such as no host skill for embedded, no wrapped skill for chained, no trigger for a PR.
+    "3": The body names the start mode and gives its hook-up, such as how to invoke it alone, which skill it sits in, what it wraps, or the PR trigger.
+  fix_hint: State in the skill how it starts (standalone, embedded, chained or tied to a PR) and give what that mode needs, such as the host or wrapped skill.
+
+TRIG-09:
+  # THQ: "you can just reference other skills by name, and the model will invoke them if they are installed." Whether a name is installed cannot be observed from the files, so it is not scored. Copying steps is not in the source and is not scored.
+  scope_note: Applies only when the skill depends on another skill. When the body refers to no other skill, record not_applicable.
+  anchors:
+    "0": The body relies on another skill's work by description only, as in use the charting skill, and gives no skill name.
+    "1": The body gives another skill's name only as a pointer, such as see skill-x, with no instruction to invoke it.
+    "2": The body tells Claude to invoke another skill by name, but omits the step it runs at, or omits what to hand over without saying none is needed.
+    "3": The body tells Claude to invoke each skill it relies on by name, at a stated step, and either names what to hand over or states that nothing is needed.
+  fix_hint: Name each skill you rely on, and say at which step to invoke it and what to pass to it.

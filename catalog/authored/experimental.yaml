@@ -1,0 +1,25 @@
+# Practices that failed the real-skill agreement test; the owner decided on 2026-11-06 to mark them experimental (spec section 10).
+# They are shown in reports but excluded from area means and blockers. Re-qualification is tracked in module M4.
+BODY-04: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "difference of 2 between scorers (writing-skills 0/2, systematic-debugging 0/2); 4 of 8 skills agreed" }
+BODY-06: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "exact agreement 6 of 8 (75%), below 80%" }
+BODY-07: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "differences of 2 on 4 of 8 skills; exact agreement 3 of 8" }
+BODY-08: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "difference of 2 (hyperframes 2/0); exact agreement 6 of 8 (75%)" }
+BODY-12: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "applicability split (blog-factcheck NA/2)" }
+BODY-14: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "difference of 2 (test-driven-development 3/1); exact agreement 6 of 8 (75%)" }
+BODY-15: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "applicability split (test-driven-development 3/NA)" }
+BODY-16: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "exact agreement 5 of 8 (62.5%), below 80%" }
+BODY-18: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "exact agreement 6 of 8 (75%), below 80%" }
+BODY-20: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "applicability split (hyperframes NA/3)" }
+BODY-21: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "the only skill both scored disagreed (hyperframes 2/3): exact agreement 0 of 1" }
+TRIG-06: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "difference of 3 (embedded-captions 0/3)" }
+TRIG-09: { source: "agreement-real-a.md (SKM-23 real-skill test, round 3)", reason: "applicability split (embedded-captions 1/NA)" }
+FIT-02: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "applicability split in round 3 (figma-generate-library n/a vs 0)" }
+FIT-05: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "applicability splits in round 3 (skill-creator n/a vs 0, brainstorming n/a vs 0)" }
+MAINT-04: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "differences of 2 in round 3 (brainstorming 3/1, writing-skills 2/0)" }
+SCRIPT-01: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "applicability split in round 3 (figma-generate-library n/a vs 1)" }
+SCRIPT-02: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "two level disagreements among at most 8 skills (exact agreement at most 75%)" }
+SCRIPT-03: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "five level disagreements in round 3, one of 2 (writing-skills 3/1)" }
+SCRIPT-04: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "applicability split in round 3 (brainstorming 0 vs n/a)" }
+SCRIPT-06: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "applicability split (skill-creator n/a vs 0) and two level disagreements in round 3" }
+SCRIPT-10: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "four level disagreements in round 3, two of 2 or more (brainstorming 0/2, systematic-debugging 0/3)" }
+STRUCT-01: { source: "agreement-real-b.md (SKM-24 real-skill test, round 3)", reason: "difference of 2 in round 3 (figma-generate-library 3/1)" }

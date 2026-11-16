@@ -1,0 +1,215 @@
+# Authored content for the STRUCT, SCRIPT and SAFE practices that are not already in mechanical.yaml.
+# Anchors and fix hints are OUR inference from each practice's quotes (research 2.5 to 2.7 and section 3). They are never Anthropic's words.
+# Design rules used here, so that two reviewers reach the same level:
+#   * Every level is defined by presence, absence or "every / at least one / none" over a set the reviewer can list, never by "mostly" or "weak".
+#   * Where several items are scored, the LOWEST level that applies to any item is the level of the practice.
+#   * A practice with no subject (no scripts, no bundled files, no fetch) is not_applicable, named in scope_note. It is never 0.
+#   * No limit is typed into any anchor; the sources give none for these practices.
+# Boundaries with the 17 mechanical checks so one defect is scored once:
+#   STRUCT-02 depth of references | STRUCT-03 contents on long files | STRUCT-06 slashes | STRUCT-07 no README | STRUCT-10 linked files exist
+#   BODY-02 length of SKILL.md | SAFE-02 hardcoded credentials | TEST-02 eval cases
+
+STRUCT-01:
+  # BP: "Split content into separate files". SPEC: reference files "focused". ENG: "mutually exclusive or rarely used together".
+  # Single-branch block = a heading or run of paragraphs in SKILL.md that applies only after one option, domain or sub-task is chosen. Separate file = a file other than SKILL.md holding prose or data (not a script).
+  # List the single-branch blocks and the separate files first, then take the first anchor that fits. Our inference: SKILL.md text that every use of the skill reads is not single-branch.
+  scope_note: Scores whether single-branch blocks were moved out of SKILL.md and whether each separate file stays on one topic. A SKILL.md that serves one flow throughout holds no single-branch block, so a one-file skill scores 3. Total length is BODY-02; depth of links is STRUCT-02; file names are STRUCT-05; reading cues are STRUCT-04.
+  anchors:
+    "0": SKILL.md holds at least one single-branch block, and the folder has no separate file besides SKILL.md and scripts.
+    "1": SKILL.md still holds at least one single-branch block, although other detail already sits in separate files.
+    "2": SKILL.md holds no single-branch block, but at least one separate file mixes several unrelated topics or domains.
+    "3": SKILL.md holds no single-branch block, and every separate file, if any, covers exactly one topic or domain.
+  fix_hint: Move detail that serves only one sub-task or domain into its own reference file, and keep each file to a single topic.
+
+STRUCT-04:
+  # CC: "so Claude knows what each file contains and when to load it". Named = SKILL.md, or a reference file SKILL.md names, mentions the file by path or by its directory.
+  scope_note: Not applicable when the folder holds no file besides SKILL.md. Missing link targets are STRUCT-10 and link depth is STRUCT-02; here a file reached through another reference file counts as named. List the folder's files, then mark each as named by path or directory. A phrase such as 'for X, read Y' states when to read; words saying what the file holds state contents; one phrase may state both.
+  anchors:
+    "0": SKILL.md and the reference files name none of the bundled files or their directories.
+    "1": At least one bundled file is never named anywhere in SKILL.md or in a reference file it names.
+    "2": Every bundled file is named, but at least one is named without stating what it contains or without stating when to read it.
+    "3": Every bundled file is named together with what it contains and the situation in which Claude should read it.
+  fix_hint: Name every bundled file in SKILL.md and add a phrase saying what it contains and when Claude should read it.
+
+STRUCT-05:
+  # BP: "Name files descriptively ... form_validation_rules.md, not doc2.md" and "Structure directories by domain or feature".
+  # Type directories such as scripts/, references/ and assets/ follow the spec and CC layout and are not penalised.
+  # Our inference: a name that is not taken from anything in the skill's domain (helper.js, utils.py, run.py) is generic, even when it says what kind of file it is.
+  scope_note: Not applicable when the folder holds no file besides SKILL.md. The directory test applies only to files of different domains sharing one directory; separation by type (scripts, references, assets) is permitted. Count domains by the topics in the file names; when every name belongs to the skill's single task, the files are one domain.
+  anchors:
+    "0": Every bundled file name is generic and would fit any file of any skill, such as doc2.md, notes.md, data1.json, run.py or helper.js.
+    "1": At least one file name says what it contains, and at least one is generic and would fit any skill, such as doc2.md or utils.py.
+    "2": Every file name says what it contains, but files of different domains or features share one directory.
+    "3": Every file name says what it contains, and files of different domains or features sit in separate directories, or all belong to one domain.
+  fix_hint: Rename generic files after their content, as in form_validation_rules.md, and group files of different domains into separate directories.
+
+STRUCT-08:
+  # BP: "If Claude never accesses a bundled file, it might be unnecessary or poorly signaled". Statement strength.
+  # E = bundled files that SKILL.md tells Claude to read for the traced task. Level = the first line that fits, from the top.
+  # Bundled = every file in the folder except SKILL.md, LICENSE files and anything under evals/. When several runs are traced, a file counts as opened if any run opens it (our inference, so that disagreeing runs give one level).
+  scope_note: Run practice, scored from a trace. Not applicable when the skill has no bundled file (LICENSE files and evals/ excluded) or no trace is given. A file for a branch that no traced task reaches counts as unopened, so the level depends on which tasks were traced; with several runs, a file is opened if any run opens it.
+  anchors:
+    "0": The trace opens none of the files that SKILL.md tells Claude to read for the traced task, and at least one such file exists.
+    "1": The trace opens some but not all of the files that SKILL.md tells Claude to read for the traced task.
+    "2": The trace opens every file SKILL.md points to for its task, but at least one bundled file is opened in no traced run.
+    "3": Every bundled file, excluding LICENSE files and evals, is opened in at least one traced run, including every file SKILL.md points to.
+  fix_hint: Run realistic tasks, list the bundled files Claude never opened, then delete them or point to them from SKILL.md with the situation that needs them.
+
+STRUCT-09:
+  # BP: "Bundle comprehensive resources ... These incur no context penalty until accessed." Contested with SB (section 4): compact skills scored higher.
+  # BP wins by precedence (research 2.5). The levels follow BP and read the reference material the task needs, not total size.
+  scope_note: Not applicable when the task needs no reference material such as API docs, schemas, datasets or long examples. Splitting inline detail is STRUCT-01 and SKILL.md length is BODY-02; instructions to fetch material from a URL are scored under SAFE-03 as well. Reference material is API documentation, a schema, a dataset or long examples that the task needs; when no file mentions such material, not applicable.
+  anchors:
+    "0": The skill relies on API docs, schemas or datasets that are not bundled, and SKILL.md points to outside locations or leaves them to memory.
+    "1": The reference material is bundled, but at least one bundled file states that it is abridged or links out for the rest.
+    "2": The reference material is bundled in full, but SKILL.md tells Claude to read all of the files at the start of every task.
+    "3": The reference material is bundled in full, and SKILL.md has Claude read each file only for the task that needs it.
+  fix_hint: Bundle the complete reference material the task needs in files, and have SKILL.md say which file to read for which task.
+
+SCRIPT-01:
+  # BP: "handle error conditions rather than deferring to Claude". Scope: the code path, judged statically. The text of messages is SCRIPT-05.
+  # A failing call = a file open, a parse, a network or a subprocess call. Guarded = inside a handler, or followed by a check of the result or exit status.
+  # Fails loudly = the script exits non-zero with a message naming the failure. A raw traceback or a silent continue is not guarded and not loud.
+  scope_note: Not applicable when the skill bundles no script. Scores whether every file, parse, network and subprocess call is guarded or fails loudly; the wording of the message is SCRIPT-05, and dependencies are SCRIPT-04. A top-level handler that catches every exception and exits non-zero with a message guards every call under it. Parse means converting external input, such as JSON, YAML or numbers; calls through the Node fs module count as file calls. Judge every bundled script file, including those in examples/; code inside markdown is not a script. A bare except with pass, an empty handler and an or-true tail after a command ignore the error, so they stop a script from reaching level 3. Judge per call, by listing each call and marking it guarded, loud or neither.
+  anchors:
+    "0": No file, parse, network or subprocess call in any bundled script is guarded or fails loudly, so failures end as raw tracebacks.
+    "1": At least one such call is guarded or fails loudly, and at least one such call in some script is neither.
+    "2": Every such call is guarded or fails loudly, but at least one handler ignores the error with no fallback value or re-raises it unchanged.
+    "3": Every such call is guarded or fails loudly, and each handler either recovers with a fallback or exits non-zero with a message.
+  fix_hint: Wrap each file, parse and network call in the scripts in a handler that recovers with a default or exits non-zero with a message.
+
+SCRIPT-02:
+  # BP: 'justify and document configuration parameters to avoid "voodoo constants"'. A configuration value = a timeout, retry count, threshold or size set in a script or SKILL.md.
+  scope_note: Not applicable when no script or SKILL.md sets a timeout, retry count, threshold, size or similar tunable value. Values that are fixed by a format or API are not subject. A comment counts as beside a value when it is on the same line or the line directly above and names that value; one heading comment over several values only restates names. List the values first. A configuration value is a literal timeout, retry count, threshold, size or limit set in a bundled script or stated as a setting in SKILL.md, including default argument values; constants fixed by a file format or API are not.
+  anchors:
+    "0": No configuration value in the scripts or in SKILL.md has a comment or note beside it.
+    "1": At least one configuration value has a comment or note and at least one has none.
+    "2": Every configuration value has a comment, but at least one comment only restates the name or unit and gives no reason for the value.
+    "3": Every configuration value has a comment or note that gives the reason for the value or how it was derived.
+  fix_hint: Add a comment to each timeout, retry count and threshold that says why that value was chosen, or remove the setting.
+
+SCRIPT-03:
+  # BP: pre-made scripts "are more reliable than generated code"; "Make clear in your instructions whether Claude should" run or read the script.
+  # Deterministic operation = a step with one correct output for a given input, such as converting, validating or extracting from a file.
+  scope_note: Not applicable when the skill has neither a deterministic operation nor a bundled script. Whether a script handles errors is SCRIPT-01; whether its dependencies are listed is SCRIPT-04. An operation is deterministic when one input has one correct output; judging or writing prose is not. A script shown as a command line in SKILL.md counts as labelled to be run; one only listed in a file table with no verb is unlabelled. List the deterministic operations in SKILL.md and mark each as having a script, a named tool or CLI, or neither. An operation done by a tool or CLI that the skill names needs no script of its own and counts as covered.
+  anchors:
+    "0": SKILL.md has at least one deterministic operation that Claude must write code for, and the skill bundles no script.
+    "1": Scripts exist for some deterministic operations, but at least one such operation is still left for Claude to write.
+    "2": Every deterministic operation has a script, but at least one script is not labelled in SKILL.md as to be run or to be read.
+    "3": Every deterministic operation has a bundled script, and SKILL.md says for each script whether Claude runs it or reads it.
+  fix_hint: Bundle a script for each deterministic operation and state in SKILL.md, for each script, whether Claude should run it or read it.
+
+SCRIPT-04:
+  # BP: "Don't assume packages are available"; API has no network access and no runtime package installation; claude.ai can install from npm and PyPI.
+  # Dependency = a third-party package or an external command-line tool a script imports or calls. The standard library, the interpreter that runs the script and the project's own commands are not dependencies.
+  scope_note: Not applicable when no script imports a third-party package or calls an external tool; the interpreter itself and the project's own commands are not dependencies. Whether the script handles a missing dependency at run time is SCRIPT-01. A tool named only in a script's comments or error message is not named.
+  anchors:
+    "0": Scripts use third-party packages or external tools, and neither SKILL.md nor any requirements file names any of them.
+    "1": Some dependencies are named in SKILL.md or a requirements file, and at least one is named nowhere.
+    "2": Every dependency is named, but no install step is given for at least one, or a script that needs network or installs does not say where that is unavailable.
+    "3": Every dependency is named with its install step, and any need for network or installation names the surfaces where it is unavailable.
+  fix_hint: List every package and tool the scripts need with its install command, and say on which surfaces the network or installs are unavailable.
+
+SCRIPT-05:
+  # BP: "Make validation scripts verbose with specific error messages". SPEC: "Include helpful error messages". Run practice.
+  # Scored per failing script invocation in the trace; the level is the lowest among them.
+  scope_note: Run practice, scored from a trace. Not applicable when the trace holds no failing script invocation. Whether the code handles the failure is SCRIPT-01; which stream carries the message is SCRIPT-07.
+  anchors:
+    "0": At least one failing invocation printed nothing, only an exit status, or a generic word such as error or failed with no cause.
+    "1": Every failing invocation states its cause, but at least one does not name the offending file, field, line or value.
+    "2": Every failing invocation names the cause and the offending item, but at least one does not state what is valid or what to do next.
+    "3": Every failing invocation names the cause and the offending item, and states the expected value or the next action.
+  fix_hint: Make each failure message name what failed, the offending file or value, and what would be valid or what to try next.
+
+SCRIPT-06:
+  # BP: for "Batch operations, destructive changes, complex validation rules, high-stakes operations" create a plan, validate it, then execute. AGBP (older) says the same.
+  # Batch or destructive operation = deletes, overwrites, bulk edits or irreversible external actions. Level = the lowest across such operations.
+  scope_note: Not applicable when the skill has no batch, destructive or irreversible operation. Handling errors inside the script is SCRIPT-01; confirmation prompts for the user are not scored here. Operations are deleting files, overwriting existing files other than the skill's own temporary output, bulk edits, and external actions that send, publish or spend money. Starting or stopping a local process is not one. A dry-run estimate or file preview that lists the changes before they run is the written plan. A source of truth is the actual state read before execution (files, a listing, an API response); the user's approval is not one.
+  anchors:
+    "0": The skill runs a batch or destructive operation directly, with no written plan of the changes before it executes.
+    "1": A written plan of the changes is produced first, but nothing checks that plan against a source of truth before execution.
+    "2": The plan is checked against a source of truth, but nothing says execution must wait for the check to pass.
+    "3": A written plan is checked against a source of truth, and execution is stated to run only after the check passes.
+  fix_hint: Have the skill write the planned changes to a file, check them against the source of truth, and run only if the check passes.
+
+SCRIPT-07:
+  # AGUS (older, stale-unconfirmed, open PR): "Prefer structured formats", "send structured data to stdout and progress messages, warnings, and other diagnostics to stderr", no interactive prompts.
+  # Our inference: a stream-json trace merges stdout and stderr, so levels 1 to 3 cannot be decided from it. The levels are judged from the script source instead.
+  # The research file entry was changed from assess=live, assessable_from=run to judgement and artifact on 2026-11-06, to match (see agreement-real-b.md).
+  # Level = the first line that fits, from the top, over all bundled scripts. --help text, retry safety and output truncation (AGUS quotes) are not scored.
+  scope_note: Judged from the bundled scripts' source, not from a trace, because a stream-json trace merges stdout and stderr (our inference). Not applicable when no script is bundled. Omits --help text, retry safety and output truncation. Output that carries a single value counts as structured. Error message content is SCRIPT-05. A JSON error object printed to stdout counts as data, not as a diagnostic. Progress lines printed only in a non-default human mode do not count against level 3. A free-form list printed in the default mode counts as free-form even when a flag selects JSON.
+  anchors:
+    "0": At least one script prompts for interactive input, such as input(), read or a confirmation question, with no argument or flag that skips it.
+    "1": No script waits for input, but at least one prints progress or warning text to stdout among its data.
+    "2": All diagnostics go to stderr, but at least one script prints a list or several fields as free-form text, not JSON, CSV or TSV.
+    "3": No script waits for input, all diagnostics go to stderr, and every list or multi-field output is JSON, CSV or TSV.
+  fix_hint: Remove interactive prompts from scripts, send progress and warnings to stderr, and print data as JSON, CSV or TSV on stdout.
+
+SCRIPT-08:
+  # BP: "always use fully qualified tool names". An MCP tool is a tool SKILL.md describes as an MCP tool, or one that appears with an mcp__ prefix.
+  # Qualified = the server name is part of the reference, as ServerName:tool_name or mcp__server__tool.
+  scope_note: Not applicable when SKILL.md names no MCP tool. Pre-approved tool lists are SAFE-04.
+  anchors:
+    "0": At least one MCP tool is referred to by its bare tool name, with no server name in the reference.
+    "3": Every reference to an MCP tool includes the server name, as in ServerName:tool_name.
+  fix_hint: Write every MCP tool as ServerName:tool_name in SKILL.md, so that Claude does not hit tool-not-found errors.
+
+SCRIPT-09:
+  # BP: "When inputs can be rendered as images, have Claude analyze them". Subject: inputs or outputs with a visual form, such as pages, slides, forms or layouts.
+  scope_note: Not applicable when the skill's inputs and outputs have no visual form. Scores the instruction and the means to render, not the quality of the analysis. The skill must produce or transform visual artifacts such as documents, slides, forms, layouts or images; showing the user a mockup or diagram as an aside makes it not applicable.
+  anchors:
+    "0": The skill works on visual inputs such as pages or slides, and nothing tells Claude to render or look at them as images.
+    "1": SKILL.md tells Claude to look at the rendered result, but no script or command for rendering is bundled or named.
+    "2": A rendering script or command is bundled or named, but no step has Claude view the rendered images and act on what it sees.
+    "3": A rendering script or command is bundled or named, and a step has Claude view the rendered images and fix what it finds.
+  fix_hint: Add a script that renders the input as images and a step in which Claude views them and corrects what it sees.
+
+SCRIPT-10:
+  # THQ: "Give Claude a small library of helpers with the gotchas written into the docstrings." Statement strength. Contradicts third-party rule R18 (section 5).
+  # Helper = a function in a bundled file that SKILL.md or another script calls. Gotcha = a stated pitfall, order or limit; a docstring that only says what the function does is not a gotcha.
+  # Our inference: a file name such as helper.js or utils.py does not make a file a helper; judge by whether it defines functions that other code calls.
+  scope_note: Not applicable when the skill bundles no script. One-off command scripts count as helpers only when another script or SKILL.md calls them as functions or by name. A file named helper.js or utils.py is not a helper unless other code calls functions from it. A function called only inside its own file is not a helper. A limit is a stated maximum, minimum or unsupported input; a default value alone is not. Count only functions that are exported or imported and called from another file or named in SKILL.md. When there is none, the level is 0. A docstring that states only a default value states no limit.
+  anchors:
+    "0": The skill bundles scripts, but they are standalone programs with no reusable function that other code or SKILL.md calls.
+    "1": Reusable helper functions exist, and none of them has a docstring or comment stating a pitfall, required order or limit.
+    "2": Reusable helper functions exist, and at least one has a docstring or comment stating a pitfall, order or limit and at least one has none.
+    "3": Every reusable helper function has a docstring or comment stating its pitfalls, required order or limits.
+  fix_hint: Collect the repeated code into helper functions and write each one's pitfalls, required order and limits into its docstring.
+
+SAFE-01:
+  fix_hint: Install skills only from sources you trust, and read every bundled file, including scripts and images, before you enable the skill.
+
+SAFE-03:
+  # OV: "Skills that fetch data from external URLs pose particular risk, as fetched content might contain malicious instructions."
+  # The levels follow that sentence only. Fixed named sources is our inference from OV's remark that dependencies can change over time.
+  scope_note: Not applicable when no file tells Claude or a script to fetch from an external URL. Hardcoded credentials in the fetch are SAFE-02; a fetch whose target is a bundled file is not subject.
+  anchors:
+    "0": A file has Claude or a script act on instructions in fetched content, such as applying every rule it contains, running its commands or piping it to a shell.
+    "1": The skill fetches from external URLs, does not have Claude act on instructions in the content, and says nothing about how to treat it.
+    "2": The skill says fetched content is data, not instructions, but at least one fetch target comes from user input or from fetched content.
+    "3": The skill says fetched content is data, not instructions, and every fetch target is a fixed URL or host named in the skill.
+  fix_hint: State that fetched content is data and never instructions, and fetch only from fixed URLs or hosts that the skill names.
+
+SAFE-04:
+  # CC: "A skill can grant itself broad tool access, so review the allowed-tools". The source gives no threshold for broad.
+  # Our inference: the line is drawn at an entry that lets any command or any code run: Bash with no pattern, Bash(*), a wildcard for all tools, or Bash limited only to an interpreter or shell prefix such as Bash(python:*), Bash(node:*) or Bash(bash:*).
+  scope_note: Claude Code only. Not applicable when the frontmatter has no allowed-tools field. The threshold for broad access is our inference, since the source names none.
+  anchors:
+    "0": The allowed-tools field lists Bash with no command pattern, Bash(*), a wildcard for all tools, or Bash limited only to an interpreter or shell such as Bash(python:*).
+    "3": Every allowed-tools entry names one specific tool, or limits Bash to patterns for named programs that are not interpreters or shells.
+  fix_hint: Replace unrestricted Bash and wildcard entries in allowed-tools with entries limited to the specific commands the skill runs.
+
+SAFE-05:
+  # REPO-A (stale-unconfirmed, single source): "A skill's contents should not surprise the user in their intent if described."
+  # Action = something a file does beyond reading and writing the task's own files. Level = the first line that fits, from the top.
+  # Inside the task = a target implied by the description's verb and object; edits to the task's own files are inside. Our inference.
+  scope_note: Not applicable when the skill has no description (that is DESC-01). Credentials are SAFE-02 and the fetch instructions are SAFE-03; this scores only whether the actions match what the description says. A side effect is stated when the description or SKILL.md names the call, file or service involved. Sending data off the machine means posting or uploading the user's content or putting it in a request; loading a library, font or image from a host does not.
+  anchors:
+    "0": A file sends data off the machine, deletes files outside the task, installs software or changes settings outside the project, and neither the description nor SKILL.md says so.
+    "1": A file takes an action on a target that the description's verb and object do not imply, though it is none of those harmful actions.
+    "2": Every action fits the described task, but at least one side effect, such as a network call or file write, is stated nowhere in the description or SKILL.md.
+    "3": Every action fits the described task, and every side effect is stated in the description or in SKILL.md.
+  fix_hint: Remove any action the description does not cover, or name it in the description, so that nothing the skill does surprises the user.
+
+SAFE-06:
+  fix_hint: Before enabling a skill, have a reviewer other than its author run its scripts in a sandbox and confirm that they do what the description says.

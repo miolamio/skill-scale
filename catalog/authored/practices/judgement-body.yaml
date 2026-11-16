@@ -1,0 +1,236 @@
+# Authored content for the BODY practices that need judgement. BODY-02 (line count) is mechanical and lives in mechanical.yaml.
+# Anchors and fix hints are OUR inference from each practice's quotes and the resolutions in research section 3
+# (C-06 decides BODY-05). They are never Anthropic's words. Where a source gives its own example, the comment names it.
+# Boundaries between neighbouring practices are stated in scope_note so one defect is scored once:
+#   length of SKILL.md = BODY-02 (mechanical) | content Claude already knows = BODY-01 | over-narrow instance-specific text = BODY-14
+#   fragility versus freedom = BODY-04 | menus of options = BODY-06 | branching guidance = BODY-15
+#   steps = BODY-09 | validation loops = BODY-10 | templates = BODY-11 | examples = BODY-12 | gotchas = BODY-13 | edge cases = BODY-16
+#   emphasis and missing reasons = BODY-05 | voice of the sentences = BODY-18 | plain, teammate-level wording = BODY-22 | success criteria and limits = BODY-23
+
+BODY-01:
+  scope_note: Scores general knowledge and default behaviour that Claude already has. Total length is BODY-02; text tied to one instance is BODY-14. A section is one heading and the text under it.
+  anchors:
+    "0": At least half of the sections explain general knowledge Claude already has, such as what a file format is or how a common tool works.
+    "1": At least one section, but fewer than half, consists of explanation of general knowledge that Claude already has.
+    "2": No section is general explanation, but at least one paragraph inside a project-specific section restates default behaviour Claude would apply anyway.
+    "3": No section or paragraph restates general knowledge or default behaviour; each one gives a convention, pitfall, path or order Claude cannot infer.
+  fix_hint: Delete each paragraph that restates what Claude would do anyway and keep only conventions, pitfalls and project facts it cannot infer.
+
+BODY-03:
+  # CC: "put the most important instructions near the top of SKILL.md"; the file is not re-read on later turns, so guidance for the whole task
+  # must be written as a standing instruction. CC sources the 5,000-token re-attach figure; no token count is checked here, and no tokenizer is used.
+  # Judging position by section order, not by a line-count cut, is inference: CC gives a token budget, not a share of the file.
+  scope_note: Claude Code only. A whole-task rule is an instruction that applies to every step of the task. A skill with no whole-task rule is not applicable. The opening section is the text before the first setup, background or step section. Score every whole-task rule, not only the first. After compaction only the first 5,000 tokens of each skill are re-attached (CC).
+  anchors:
+    "0": No whole-task rule sits in the opening section; every one comes after the setup, background or step sections.
+    "1": At least one whole-task rule sits in the opening section, and at least one other comes after the setup, background or step sections.
+    "2": Every whole-task rule is in the opening section, but at least one is worded as a one-time step, such as for this turn.
+    "3": Every whole-task rule is in the opening section, and every one is worded as a standing instruction that holds on every turn.
+  fix_hint: Move the rules that govern the whole task to the top of SKILL.md and rewrite one-time wording as instructions that stay true on every turn.
+
+BODY-04:
+  # BP: "Match the level of specificity to the task's fragility and variability." Low freedom for fragile, error-prone operations; high freedom where many approaches work.
+  scope_note: A fragile step is one that is destructive or must run in a fixed order or with exact commands. A flexible task is one where several methods give an acceptable result. If a skill has only one kind, the other test counts as met. Instruction text tied to one instance is BODY-14. A fragile step gives exact commands in order when it names the literal command, tool call or action and its position in a numbered sequence; rules stated as principles count as a goal.
+  anchors:
+    "0": At least one fragile step is left as a goal with no exact command or order, and at least one flexible task is scripted step by step.
+    "1": At least one fragile step is left as a goal with no exact command or order, and no flexible task is over-scripted.
+    "2": Every fragile step gives exact commands in order, but at least one flexible task is scripted step by step with no room for another method.
+    "3": Every fragile step gives exact commands in order, and every flexible task states the goal and leaves the method to Claude.
+  fix_hint: Give exact commands for fragile steps, such as migrations, and replace step-by-step scripting of flexible tasks with the goal to reach.
+
+BODY-05:
+  # Follows CCBP and CPBP only (C-06). Winner CCBP: "piling on emphasis mostly makes Claude over-apply the rule"; "adding IMPORTANT probably won't fix it".
+  # CPBP: explaining why gives Claude more information about the goal. Losing view, not used: BP's older "MUST filter" and PDF's "## Important" headers.
+  # Emphasis instance = an all-capital word of 3 or more letters that is not an acronym or identifier, such as ALWAYS, NEVER, MUST, IMPORTANT or CRITICAL. Counting them is the mechanical part.
+  scope_note: Scores emphasis instances and prohibitions or required orders given without a reason. Emphasis in the description is DESC-08; absent success criteria are BODY-23. Emphasis is an all-capital word of 3 or more letters that is not an acronym or identifier; a capitalised first letter and a heading's wording do not count. Bold and italics are not scored (inference, since the quotes concern capitals only). A reason is a clause saying why, in the same or the next sentence.
+  anchors:
+    "0": The body has two or more emphasis instances, and no prohibition or required order anywhere is followed by a reason.
+    "1": The body has two or more emphasis instances, and at least one prohibition or required order is followed by a reason.
+    "2": The body has exactly one emphasis instance, or none but at least one prohibition or required order has no reason.
+    "3": The body has no emphasis instance, and every prohibition and required order is followed by a reason.
+  fix_hint: Replace capitalised emphasis with a plain sentence that states the rule and why it matters, instead of adding stronger wording.
+
+BODY-06:
+  # BP: "Don't present multiple approaches unless necessary"; BP's example names one library and adds an escape hatch for a special case.
+  scope_note: Scores tasks that list several tools or approaches. A skill that names only one approach per task is level 3. Branches chosen by situation are BODY-15; detail level is BODY-04. Options are alternatives offered for the same job; different tools for different jobs are not options.
+  anchors:
+    "0": More than one task lists two or more tools or approaches and names no default for any of them.
+    "1": Exactly one task lists two or more tools or approaches and names no default for it.
+    "2": Every task with several options names a default, but at least one alternative gets more than one sentence.
+    "3": Every task with several options names a default, and each alternative is one sentence at most; or each task names only one approach.
+  fix_hint: Name one default tool or approach for each task, and reduce each alternative to a short note on when to switch to it.
+
+BODY-07:
+  # BP: "Choose one term and use it throughout the Skill"; its examples contrast the use of one of API endpoint, URL, route or path.
+  scope_note: Two terms count as one when the skill states they are equivalent. Scores terms inside the skill's own files only. Count only pairs that name the same thing in the same role, as endpoint and route do for one URL path. Do not count the words Claude, agent or subagent, user and human partner, near-synonyms the skill uses for different items, or verb and noun forms of one word. Before scoring, list each synonym pair with a quote of both terms; a pair that cannot be quoted twice does not count.
+  anchors:
+    "0": More than one concept is named by different terms within SKILL.md, with no statement that the terms are equivalent.
+    "1": Exactly one concept is named by different terms within SKILL.md, with no statement that the terms are equivalent.
+    "2": SKILL.md uses one term per concept, but at least one concept has another name in a reference file or script text.
+    "3": Each concept has one name, used identically in SKILL.md, reference files, scripts and examples.
+  fix_hint: Pick one term for each concept, then search every file in the skill for its synonyms and replace them with that term.
+
+BODY-08:
+  # BP: "Don't include information that will become outdated"; REPO-C embeds no list of courses because it "would go stale".
+  # A time-bound statement is a date, a word such as currently, latest or as of, or a list of current products, versions or models, stated as a present fact.
+  # A version the skill pins for its own scripts is not counted, and version-labelled past behaviour counts as marked old behaviour: both readings are our inference.
+  scope_note: Scores time-bound statements in SKILL.md and its markdown reference files; skip scripts, assets and copied third-party documents. Broken links are STRUCT-10. A live source is a command, URL or file the skill tells Claude to read for the current value. Version-labelled past behaviour, as in before vX do Y, counts as marked old behaviour. Current items means lists of products, versions or models.
+  anchors:
+    "0": Two or more time-bound statements appear as present fact, and none points to a live source or is marked as old behaviour.
+    "1": Exactly one time-bound statement appears as present fact, with no live source and not marked as old behaviour.
+    "2": Every time-bound statement either points to a live source or is marked as old, legacy or version-labelled past behaviour.
+    "3": The skill contains no time-bound statement.
+  fix_hint: Replace dates, version numbers and lists of current items with an instruction to read the live source, or move old cases into a legacy section.
+
+BODY-09:
+  # BP: "Break complex operations into clear, sequential steps"; a checklist the agent copies and ticks for complex workflows. Assess M (numbered steps present) + J.
+  scope_note: Not applicable when the skill has no workflow of more than one ordered action. A staged workflow is one where a later stage uses the output of an earlier one. Loops that fix errors are BODY-10; branching is BODY-15.
+  anchors:
+    "0": A workflow of several ordered actions is written as prose paragraphs, with no numbered or bulleted sequence.
+    "1": The steps are listed, but the list is unnumbered, or at least one step combines more than one action.
+    "2": Each step is one numbered action in order, but a staged workflow has no checklist.
+    "3": Each step is one numbered action in order, and every staged workflow has a checklist that Claude can copy and tick.
+  fix_hint: Rewrite the workflow as numbered steps with one action each, and add a copyable checklist where the work has several stages.
+
+BODY-10:
+  # BP: "Run validator → fix errors → repeat"; "This pattern greatly improves output quality."
+  scope_note: Not applicable when the skill creates or changes no file or code whose result a command or test can check, as with a pure reference skill or a chat answer. Success criteria stated as outcomes are BODY-23. The checker script itself is a SCRIPT matter.
+  anchors:
+    "0": The skill produces files or changes and has no instruction to check the result before finishing.
+    "1": The skill says to check the result, but names no command, test or criterion that decides whether it passes.
+    "2": The skill names a command, test or criterion to check the result, but gives no instruction for what to do when it fails.
+    "3": The skill names a command, test or criterion, and tells Claude to fix the failures and run it again until it passes.
+  fix_hint: Add a step that runs a named validator or test, and tell Claude to fix the reported errors and rerun until it passes.
+
+BODY-11:
+  # BP: "Provide templates for output format. Match the level of strictness to your needs." THQ: a template file in assets/ for a markdown output.
+  scope_note: Applicable only when the skill's main deliverable is a document or report that Claude writes to a file; a chat answer or a media file is not. Not applicable otherwise. Filled-in input and output samples are BODY-12; the layout of the assets folder is a STRUCT matter.
+  anchors:
+    "0": The skill produces a structured output and neither gives a template nor describes the format.
+    "1": The output format is described in prose only, with no template that Claude can copy or fill in.
+    "2": A template exists, inline or as a file, but nothing says how strictly it must be followed.
+    "3": A template exists, inline or as a file, and a sentence states how strictly it must be followed or which parts may vary.
+  fix_hint: Add an output template, inline or as a file in assets, and mark which sections must stay fixed and which may vary.
+
+BODY-12:
+  # BP: "Examples convey the desired style and level of detail to Claude more clearly than descriptions alone." BP's commit-message example gives input, then output.
+  scope_note: Applicable only when the skill's main deliverable is prose that Claude writes, such as a document, report or message; a chat answer, a video or other media is not. Not applicable otherwise. An output kind is a distinct type of result the skill makes, such as a commit message or a report. Templates of structure are BODY-11.
+  anchors:
+    "0": The skill asks for output in a particular style or detail and shows no example of it.
+    "1": The skill shows only abstract placeholders, such as bracketed patterns, and no filled-in example.
+    "2": The skill shows filled-in examples, but not a complete pair of input and resulting output for every output kind.
+    "3": The skill shows a complete, filled-in pair of input and resulting output for every output kind it produces.
+  fix_hint: Add a concrete input and output pair for each kind of output the skill makes, taken from real use.
+
+BODY-13:
+  # THQ: "The highest-signal content in any skill is the Gotchas section", built from failure points Claude hits in use. Whether an entry came from a real failure
+  # cannot be seen in the files, so the anchors test only whether each entry names a mistake and the correction. A new skill with no section scores 0 by design.
+  scope_note: Scores a dedicated gotchas or pitfalls section. Predictable edge cases are BODY-16; step order is BODY-09. A dedicated section is a heading or list whose entries are mistakes or pitfalls. A bare caution such as be careful names no mistake and counts as no warning. Treating a single-entry section as level 2 is inference.
+  anchors:
+    "0": No sentence names a specific mistake or pitfall; at most there are bare cautions such as be careful.
+    "1": Specific mistakes are named only in scattered sentences, with no dedicated gotchas or pitfalls section or list.
+    "2": A dedicated section exists, but it holds a single entry, or at least one entry gives a caution without saying what to do instead.
+    "3": A dedicated section with two or more entries exists, and every entry names the mistake and states what to do instead.
+  fix_hint: Add a Gotchas section to SKILL.md and list each failure you have seen with the mistaken action and the correction Claude should apply.
+
+BODY-14:
+  # THQ: be careful of being too specific; AGBP (older): teach "how to approach" a class of problems, not "what to produce" for one instance.
+  scope_note: An instance value is a fixed file name, id, entity or output presented as the rule rather than as an example. Mismatched exactness for fragile tasks is BODY-04.
+  anchors:
+    "0": No goal is stated for the class of requests, and at least one step presents an instance value as the rule.
+    "1": A goal is stated, but at least one step presents an instance value as the rule.
+    "2": No step presents an instance value as the rule, but either the goal or the constraints are not stated.
+    "3": Both the goal and the constraints are stated, and every instance value is labelled as an example.
+  fix_hint: State the goal and constraints for the whole class of requests, and label instance-specific values as examples instead of rules.
+
+BODY-15:
+  # BP: "Guide Claude through decision points", with a worked create-versus-edit branch.
+  scope_note: Not applicable when the skill has a single path. A path is a separate procedure the text gives for a different kind of input or situation. An otherwise branch counts as the instruction for a case that matches none. Two complementary conditions, such as X and not X, cover every case and need no extra instruction. Equal alternatives with no default are BODY-06.
+  anchors:
+    "0": The skill gives separate procedures for different situations and states a condition for choosing none of them.
+    "1": The skill states a condition for choosing some of its procedures, but not for all of them.
+    "2": The skill states a condition for every procedure, but gives no instruction for a case that matches none.
+    "3": The skill states a condition for every procedure and gives an instruction for a case that matches none.
+  fix_hint: Write each fork as a condition followed by its steps, such as If creating new, follow A; if editing, follow B, with a fallback.
+
+BODY-16:
+  # ART1 (older, single source, statement strength): structure the skill with "error handling, and limitations". The three kinds below are our reading of "edge cases".
+  scope_note: The kinds are missing or invalid input, a failed command or tool, and an empty or no-match result. Only kinds that can occur in this skill count. Failures seen in use are BODY-13; success criteria and limits are BODY-23.
+  anchors:
+    "0": The skill gives an instruction for none of the edge-case kinds that can occur in it.
+    "1": The skill gives an instruction for exactly one edge-case kind, and at least one other kind can occur without one.
+    "2": The skill gives an instruction for more than one edge-case kind, but not for every kind that can occur in it.
+    "3": The skill gives an instruction for every edge-case kind that can occur in it.
+  fix_hint: List the likely edge cases, such as missing input or a failed tool, and write the action Claude should take for each one.
+
+BODY-17:
+  # CC: "The subagent doesn't see your conversation history, so the skill's instructions have to stand on their own." Put everything the task needs in SKILL.md.
+  scope_note: Applies only to a skill with context set to fork; for any other skill the practice is not applicable.
+  anchors:
+    "0": The skill refers to earlier conversation, such as as discussed above or the file from before.
+    "1": The skill has no reference to earlier conversation, but names an input only by a vague pointer such as the file, with no path or way to get it.
+    "2": Every input is named with a path or a way to get it, but the skill does not say what to return.
+    "3": Every input is named with a path or a way to get it, and the skill states what to return.
+  fix_hint: Rewrite the forked skill so that it carries the task, inputs and constraints itself, and states what it must return.
+
+BODY-18:
+  # REPO-A (older, single source): "Prefer using the imperative form in instructions." Description wording is DESC-05 and DESC-06, not this.
+  scope_note: Scores the body only. An instruction section is a heading whose text tells Claude what to do. Plain wording for a newcomer is BODY-22.
+  anchors:
+    "0": No instruction section is written in the imperative form; they describe what the skill or the user does.
+    "1": Fewer than half of the instruction sections are written in the imperative form.
+    "2": At least half of the instruction sections are imperative, but at least one is not.
+    "3": Every instruction section is written in the imperative form, each instruction opening with a verb such as Run, Read or Check.
+  fix_hint: Rewrite each instruction as a command opening with a verb, such as Run, Read or Check, instead of describing what will happen.
+
+BODY-19:
+  # CCX and STEER: "If a rule must hold every time, make it a hook rather than a prompt instruction." Claude Code only.
+  # An absolute rule is a rule the text states with always, never or must not, or as a block on an action. Our reading; the files cannot show intent.
+  scope_note: Claude Code only. Not applicable when the skill states no absolute rule. Capitalised emphasis on such rules is BODY-05. A hook is shipped when its configuration is in the skill folder, documented when the skill says where to add it.
+  anchors:
+    "0": The skill states at least one absolute rule, and no absolute rule has a hook named for it.
+    "1": At least one absolute rule has a hook named for it, but not every absolute rule does.
+    "2": Every absolute rule has a hook named for it, but at least one hook is neither shipped nor documented.
+    "3": Every absolute rule has a hook that is shipped in the skill folder or documented as to where to add it.
+  fix_hint: Move each rule that must hold every time into a hook, and keep the written instruction only to explain why the hook exists.
+
+BODY-20:
+  # THQ: store setup in a config.json in the skill directory; if it is not set up, ask the user. Suggestion strength; optional.
+  scope_note: Not applicable when the skill needs no user-specific value such as a channel, account or path. Any named settings file counts as the config file, wherever it is kept (inference).
+  anchors:
+    "0": The skill needs user-specific values and either writes them into the instructions or assumes them without asking.
+    "1": The skill asks the user for the values, but gives no place to save the answers.
+    "2": The skill reads the values from a config file, but says nothing about the case where the file is missing.
+    "3": The skill reads the values from a config file in its folder, and asks the user and saves the answers when the file is missing.
+  fix_hint: Read setup values from a config.json in the skill folder, and ask the user for them and save them when the file is missing.
+
+BODY-21:
+  # THQ: "Some skills can include a form of memory by storing data within them." Statement strength; optional.
+  scope_note: Applies only when the body says Claude should keep or reuse data across separate invocations; otherwise the practice is not applicable. Files re-read within one run are not memory. The body must tell Claude to save and later reuse its own results; a remark about resumable output with no stored data, or a brief the user supplies, is not memory.
+  anchors:
+    "0": The skill says Claude should remember or reuse earlier results and names no file where they are kept.
+    "1": The skill names a file for stored data and says neither when to read it nor when to update it.
+    "2": The skill names a file for stored data and says when to read it or when to update it, but not both.
+    "3": The skill names a file for stored data and says both when to read it and when to update it.
+  fix_hint: Name the file where the skill keeps its history, and say when Claude reads it at the start and updates it at the end.
+
+BODY-22:
+  # VER: "Write the procedure in plain English, the way you'd hand it to a new teammate on day one." Single source.
+  scope_note: Tool and product names and abbreviations in common developer use, such as CI or API, do not count. An undefined term is an abbreviation, code or project word first used without a definition or a link to one in the skill; ignore words that appear in the skill's own description. Imperative voice is BODY-18; explaining general knowledge is BODY-01.
+  anchors:
+    "0": The text uses more than one undefined term.
+    "1": The text uses exactly one undefined term.
+    "2": The text uses no undefined term, but at least one step refers to context it never states, such as do the usual setup.
+    "3": The text uses no undefined term, and no step refers to context it never states.
+  fix_hint: Reread the skill as a new teammate would, then define each abbreviation and add the context behind any step that skips ahead.
+
+BODY-23:
+  # PDF: "Be Specific and Actionable"; ART1: "Include these criteria in your instructions so Claude can self-check"; "Specify what the skill cannot do".
+  scope_note: Scores three elements, concrete actions, success criteria and stated limits. Running a validator is BODY-10; emphasis is BODY-05; edge-case handling is BODY-16.
+  anchors:
+    "0": The instructions are general advice, such as ensure quality, and name no concrete action.
+    "1": The instructions name concrete actions, and state neither success criteria nor what the skill cannot do.
+    "2": The instructions name concrete actions and state either success criteria or what the skill cannot do, but not both.
+    "3": The instructions name concrete actions and state both success criteria and what the skill cannot do.
+  fix_hint: Replace vague advice with concrete actions, add criteria Claude can check its result against, and list what the skill does not do.
+

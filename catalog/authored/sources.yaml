@@ -1,0 +1,38 @@
+# Corrections to the source register. urls replaces the parsed list; verify: skip keeps a source out of `catalog verify`.
+CCX:
+  urls:
+    - https://code.claude.com/docs/en/features-overview
+    - https://code.claude.com/docs/en/debug-your-config
+    - https://code.claude.com/docs/en/commands
+    - https://code.claude.com/docs/en/memory
+    - https://code.claude.com/docs/en/settings-reference
+    - https://code.claude.com/docs/en/env-vars
+    - https://code.claude.com/docs/en/errors
+SUP:
+  urls:
+    - https://support.claude.com/en/articles/12512198-creating-custom-skills
+    - https://support.claude.com/en/articles/12512176-what-are-skills
+AGX:
+  urls:
+    - https://agentskills.io/skill-creation/quickstart
+    - https://agentskills.io/client-implementation/adding-skills-support
+    - https://agentskills.io/home
+PDF:
+  verify: skip
+  skip_reason: a PDF file; text extraction is not part of this version
+REPO-A:
+  urls: [https://github.com/anthropics/skills]
+  verify: skip
+  skip_reason: quotes come from single files in a repository tree; raw file URLs are to be added in a later version
+REPO-C:
+  urls: [https://github.com/anthropics/skills]
+  verify: skip
+  skip_reason: quotes come from single files in a repository tree; raw file URLs are to be added in a later version
+COOK:
+  urls: [https://github.com/anthropics/claude-cookbooks/tree/main/skills]
+  verify: skip
+  skip_reason: a repository tree; no practice quotes it directly
+OTH-A:
+  urls: []
+  verify: skip
+  skip_reason: archived sources, cited by no practice
