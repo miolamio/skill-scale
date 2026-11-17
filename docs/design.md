@@ -156,7 +156,7 @@ Nothing scored must never pass. skillgrade's `--ci` passes a failing task with `
 ## 9. Report
 
 - **Console:** area bars with coverage, then blockers, then the lowest scores with file and line.
-- **HTML:** every criterion with score, evidence, quote and link, fix hint, freshness and contested state, plus the process checklist as a separate section.
+- **HTML:** a review page, not a full listing. Each practice scored below 3 gets a card with its evidence excerpt, up to two catalogue quotes with links, and the fix hint; with `--judge` the advisor's grouped changes replace the cards. Process items appear only as a count; the full per-practice list is in the JSON report.
 - **JSON:** versioned schema with catalogue revision, CLI version, model, and one record per criterion. With `--judge` it also carries a `judge` block (model, runs, calls, cost, duration, unstable practices, judge notes) and a `judge` detail on each judged record; these are additive and `schema_version` stays 1.
 - `--lang` localises interface strings and fix hints; English and Russian ship first. Source quotes stay in their original language.
 

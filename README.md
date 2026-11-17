@@ -163,7 +163,7 @@ Practices are grouped into 11 areas: META (name and frontmatter), DESC (descript
 
 Every practice gets exactly one record in every report, in one of these states: `scored`, `not_run`, `process`, `contested` or `not_applicable`. Nothing is dropped.
 
-- **Mechanical practices (17)** are decided by scanning the folder: name rules, frontmatter, description presence and length, `SKILL.md` length, reference depth and links, a table of contents on long reference files, a stray README, hardcoded credentials, and eval cases. They are scored 0 or 3, never 1 or 2. Per profile, 12 to 17 apply to a given skill. This is all that runs without `--judge`.
+- **Mechanical practices (17)** are decided by scanning the folder: name rules, frontmatter, description presence and length, `SKILL.md` length, reference depth and links, a table of contents on long reference files, a stray README, hardcoded credentials, and eval cases. They are scored 0 or 3, never 1 or 2. At most 15 can be scored under `claude-code` and 17 under `portable`; fewer when a check does not apply to the skill (for example STRUCT-02 when `SKILL.md` links nothing), so a small skill may get around 11. This is all that runs without `--judge`.
 - **Judgement practices** need reading and understanding, such as whether a description says when to use the skill. They are `not_run` unless `--judge` is given. With `--judge`, the qualified ones (not experimental, not contested, applicable to the profile; 36 catalogue-wide, fewer per profile) are scored 0 to 3 by a model.
 - **Live practices** need a run of the skill with a model. They are always `not_run`. The live layer is not built.
 - **Process practices (23)** describe how a skill is developed, and appear as a checklist.
