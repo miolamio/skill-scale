@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { httpFetcher } from "./catalog/fetcher.ts";
 import { main } from "./cli.ts";
@@ -12,4 +13,5 @@ process.exitCode = await main(process.argv.slice(2), {
   fetcher: httpFetcher,
   catalogDir: fileURLToPath(new URL("../catalog/", import.meta.url)),
   version: pkg.version,
+  term: { env: process.env, isTTY: process.stdout.isTTY, columns: process.stdout.columns, home: homedir() },
 });

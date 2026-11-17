@@ -11,6 +11,9 @@ import { CHECKS_BY_PRACTICE } from "./checks/index.ts";
 import { ContractError } from "./checks/types.ts";
 import { loadSkill, SkillLoadError } from "./loader/skill.ts";
 import { renderConsole } from "./report/console.ts";
+import { renderConsolePretty } from "./report/console-pretty.ts";
+import { LOGO } from "./report/logo.ts";
+import { cyan, detectPretty, termWidth } from "./report/term.ts";
 import { buildJson } from "./report/json.ts";
 import { renderHtml } from "./report/html.ts";
 import type { AdvisorState } from "./report/html.ts";
@@ -33,6 +36,8 @@ export interface CliIo {
   judgeRunner?: JudgeRunner;
   /** Where `--format html` writes its default file. Production leaves it out: the current directory. */
   cwd?: string;
+  /** What the terminal looks like. Production passes the real process; tests leave it out and get plain output. */
+  term?: { env: Record<string, string | undefined>; isTTY?: boolean; columns?: number; home?: string };
 }
 
 const DEFAULT_MODEL = "claude-sonnet-5-5";
@@ -46,6 +51,10 @@ const USAGE = `Usage:
 
 Exit codes: 0 no blockers and something scored; 1 at least one blocker (including a security finding); 2 failure, bad input, nothing scored, or --judge got no usable answer.
 `;
+
+function prettyOn(io: CliIo): boolean {
+  return io.term !== undefined && detectPretty(io.term.env, io.term);
+}
 
 function fail(io: CliIo, message: string): number {
   io.stderr(`${t(STRINGS_EN, "failure", { message })}\n`);
@@ -88,8 +97,9 @@ async function scan(argv: string[], io: CliIo): Promise<number> {
     allowPositionals: true,
     strict: true,
   });
-  if (values.help) return io.stdout(USAGE), EXIT.OK;
-  if (values.version) return io.stdout(`${io.version}\n`), EXIT.OK;
+  const logo = prettyOn(io) ? `${cyan(LOGO, true)}\n\n` : "";
+  if (values.help) return io.stdout(`${logo}${USAGE}`), EXIT.OK;
+  if (values.version) return io.stdout(`${logo}${io.version}\n`), EXIT.OK;
   if (positionals.length === 0) return io.stderr(USAGE), EXIT.FAILURE;
   if (positionals.length > 1) return fail(io, `expected one skill folder, got ${positionals.length}`);
   const path = positionals[0] as string;
@@ -183,7 +193,14 @@ async function scan(argv: string[], io: CliIo): Promise<number> {
     }
   } else if (values.out) writeFileSync(values.out, `${JSON.stringify(json, null, 2)}\n`);
   if (format === "json") io.stdout(`${JSON.stringify(json, null, 2)}\n`);
-  else if (format === "console") io.stdout(renderConsole({ version: io.version, revision: cat.meta.revision, profile, skillPath: skill.root, skippedFiles: skill.skippedFiles }, records, summary, STRINGS_EN));
+  else if (format === "console") {
+    const ctx = { version: io.version, revision: cat.meta.revision, profile, skillPath: skill.root, skillName, skippedFiles: skill.skippedFiles };
+    io.stdout(
+      prettyOn(io) && io.term
+        ? renderConsolePretty({ ctx, records, summary, strings: STRINGS_EN }, { width: termWidth(io.term), home: io.term.home ?? "" })
+        : renderConsole(ctx, records, summary, STRINGS_EN),
+    );
+  }
   if (outcome?.allInfra) io.stderr(`Error: the judge produced no usable answer (${firstInfraReason(outcome)})\n`);
   return exitCode;
 }

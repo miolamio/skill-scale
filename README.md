@@ -19,10 +19,10 @@ or run it without installing:
 
     npx skill-scale ./path/to/my-skill
 
-From a release tarball (`skill-scale-0.4.0.tgz`, attached to the GitHub release). The `yaml` dependency is bundled, so this works with no network:
+From a release tarball (`skill-scale-0.5.0.tgz`, attached to the GitHub release). The `yaml` dependency is bundled, so this works with no network:
 
-    npm install -g ./skill-scale-0.4.0.tgz
-    npx ./skill-scale-0.4.0.tgz ./path/to/my-skill
+    npm install -g ./skill-scale-0.5.0.tgz
+    npx ./skill-scale-0.5.0.tgz ./path/to/my-skill
 
 From source:
 
@@ -47,12 +47,12 @@ From a source checkout, replace `skill-scale` with `node dist/bin.js`. The tool 
 
 ## Examples
 
-The outputs below come from real runs of version 0.4.0 (catalogue revision 5) on a public skill folder, copied to `./pr`. Only the `Skill:` path line is shortened.
+The outputs below come from real runs of version 0.5.0 (catalogue revision 5) on a public skill folder, copied to `./pr`. Only the `Skill:` path line is shortened.
 
 ### Console report (default)
 
     $ skill-scale ./pr
-    skill-scale 0.4.0 | catalogue r5 | profile claude-code
+    skill-scale 0.5.0 | catalogue r5 | profile claude-code
     Skill: ./pr
 
     Scored 12 of 123 practices (mechanical only). Not a full assessment: the judgement and live layers did not run.
@@ -91,6 +91,8 @@ Exit code 0: no blockers and something scored. A skill with a blocker lists it, 
     ...
 
 Exit code 1.
+
+In a terminal the same report is drawn with colour, bars and marks, and wrapped to the window width; the facts and their order do not change. Set `NO_COLOR=1` to switch that off, or `FORCE_COLOR=1` to force it when output is not a terminal (for example to capture a screenshot). Pipes, redirection and CI get the plain text above, unchanged. `--help` and `--version` show a logo only in the pretty case.
 
 ### JSON (`--format json`)
 

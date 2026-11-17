@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 — 2026-11-17
+
+### Changed
+- Console report in a terminal: a compact `◢◤` header, colour, Unicode bars (`█░`), `✗`, `▲` and `✓` marks, and long lines wrapped to the terminal width (60 to 100 columns, 80 when unknown). Same sections, same facts, same order as before.
+- `--help` and `--version` show an ASCII logo above their text in a terminal.
+- Pretty output is on when stdout is a terminal, `NO_COLOR` is unset or empty and `TERM` is not `dumb`; `FORCE_COLOR` set to anything but empty or `0` turns it on anywhere. Only the 16 basic ANSI colours, bold and dim are used.
+
+### Unchanged
+- Output through a pipe, redirection or CI is byte for byte what 0.4.0 printed, including `--version` and `--help`. JSON, HTML, exit codes and scoring are untouched. No new dependencies.
+
 ## 0.4.0 — 2026-11-16
 
 ### Added
